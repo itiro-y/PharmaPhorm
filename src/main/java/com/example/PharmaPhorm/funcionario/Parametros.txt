@@ -1,0 +1,7 @@
+    {
+        "name": "banana",
+        "idade": 10,
+	    "genero": masculino,
+	    "setor": gerencia,
+	    "salariobase": 1000.0
+    }
