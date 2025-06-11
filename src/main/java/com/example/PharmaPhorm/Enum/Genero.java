@@ -3,5 +3,5 @@ package com.example.PharmaPhorm.Enum;
 public enum Genero {
     MASCULINO,
     FEMININO,
-    NAO_
+    NAO_INFORMADO;
 }
