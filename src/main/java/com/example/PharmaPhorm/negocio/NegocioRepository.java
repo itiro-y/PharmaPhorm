@@ -1,4 +1,4 @@
-package com.example.PharmaPhorm.Negocio;
+package com.example.PharmaPhorm.negocio;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
