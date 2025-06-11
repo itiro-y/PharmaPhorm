@@ -1,0 +1,25 @@
+#docker-compose up -d
+#docker ps
+
+#Ao conectar ao banco, use o port 5433
+
+services:
+  postgres:
+    image: postgres
+    container_name: pharmaphorma-db
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+      POSTGRES_DB: pharmaphorma
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - pharmacy-net
+
+volumes:
+  pgdata:
+
+networks:
+  pharmacy-net:
