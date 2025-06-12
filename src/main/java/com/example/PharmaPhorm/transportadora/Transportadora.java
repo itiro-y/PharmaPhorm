@@ -14,17 +14,20 @@ public class Transportadora {
     @GeneratedValue long id;
 
     private String nome;
-    @ElementCollection List<String> regioes;
+
+    @ElementCollection
+    private List<String> regioes;
+
     private boolean isAtivo;
 
-    @OneToMany(mappedBy = "transportadora")
-    private List<Negocio> negocios;
+//    @OneToMany(mappedBy = "transportadora")
+//    private List<Negocio> negocios;
 
     public Transportadora(String nome, ArrayList<String> regioes) {
         this.nome = nome;
         this.regioes = regioes;
         isAtivo = true;
-        negocios = new ArrayList<>();
+        //negocios = new ArrayList<>();
     }
 
     // Getters e Setters
@@ -40,10 +43,6 @@ public class Transportadora {
         return regioes;
     }
 
-    public void setRegioes(List<String> regioes) {
-        this.regioes = regioes;
-    }
-
     public long getId() {
         return id;
     }
@@ -54,6 +53,10 @@ public class Transportadora {
 
     public void setAtivo(boolean ativo) {
         isAtivo = ativo;
+    }
+
+    public void addRegioes(String regiao){
+        regioes.add(regiao);
     }
 
 

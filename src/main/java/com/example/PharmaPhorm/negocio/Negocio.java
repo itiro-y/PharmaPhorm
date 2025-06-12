@@ -6,15 +6,13 @@ import com.example.PharmaPhorm.funcionario.Funcionario;
 import com.example.PharmaPhorm.transportadora.Transportadora;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity
 public class Negocio {
-    private @Id @GeneratedValue long id;
+    private @Id @GeneratedValue Long id;
 
     private final Tipo tipo;
     private Status status;
