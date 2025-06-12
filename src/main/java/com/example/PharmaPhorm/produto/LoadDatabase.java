@@ -11,7 +11,7 @@ public class LoadDatabase {
     private static final Logger log = LoggerFactory.getLogger(LoadDatabase.class);
 
     @Bean
-    CommandLineRunner initDatabase(ProdutoRepository repository) {
+    CommandLineRunner initDatabaseProduto(ProdutoRepository repository) {
         return args ->{
             log.info("preloading "+ repository.save(new Produto(
                     "produto1",
