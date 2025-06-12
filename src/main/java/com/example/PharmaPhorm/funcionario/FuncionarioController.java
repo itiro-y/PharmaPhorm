@@ -10,12 +10,10 @@ import java.util.List;
 @RestController
 class FuncionarioController {
     private final FuncionarioRepository repository;
-    private final CaixaRepository caixaRepository;
     private final CaixaController caixaController;
 
-    FuncionarioController(FuncionarioRepository repository, CaixaRepository caixaRepository, CaixaController caixaController) {
+    FuncionarioController(FuncionarioRepository repository, CaixaController caixaController) {
         this.repository = repository;
-        this.caixaRepository = caixaRepository;
         this.caixaController = caixaController;
     }
 
