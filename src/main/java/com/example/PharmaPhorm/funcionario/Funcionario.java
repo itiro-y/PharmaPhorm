@@ -173,5 +173,4 @@ public class Funcionario {
     public int hashCode() {
         return Objects.hash(id, nome, idade, genero, setor, salariobase, VA, VR, VT, PLANO_SAUDE, PLANO_ODONTO);
     }
-
 }
