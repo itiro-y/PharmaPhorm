@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Produtos - PharmaPhorm</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+        th { background-color: #f0f0f0; }
+        h1 { color: #2a7ae2; }
+        input, button { padding: 5px; margin-top: 5px; }
+    </style>
+</head>
+<body>
+<h1>Cadastro de Produtos</h1>
+
+<h2>Adicionar Produto</h2>
+<form id="form-produto">
+    <input type="text" id="nome" placeholder="Nome" required>
+    <input type="number" id="valorCompra" placeholder="Valor Compra" required step="0.01">
+    <input type="number" id="valorVenda" placeholder="Valor Venda" required step="0.01">
+    <input type="number" id="quantidadeEstoque" placeholder="Quantidade" required>
+    <button type="submit">Salvar</button>
+</form>
+
+<h2>Lista de Produtos</h2>
+<table id="tabela-produtos">
+    <thead>
+    <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Compra</th>
+        <th>Venda</th>
+        <th>Estoque</th>
+        <th>Ações</th>
+    </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+    async function carregarProdutos() {
+        const response = await fetch("/produtos");
+        const produtos = await response.json();
+        const tbody = document.querySelector("#tabela-produtos tbody");
+        tbody.innerHTML = "";
+
+        produtos.forEach(produto => {
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                    <td>${produto.id}</td>
+                    <td>${produto.nome}</td>
+                    <td>R$ ${produto.valorCompra.toFixed(2)}</td>
+                    <td>R$ ${produto.valorVenda.toFixed(2)}</td>
+                    <td>${produto.quantidadeEstoque}</td>
+                    <td><button onclick="deletarProduto(${produto.id})">Excluir</button></td>
+                `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function deletarProduto(id) {
+        await fetch(`/produtos/${id}`, { method: "DELETE" });
+        carregarProdutos();
+    }
+
+    document.getElementById("form-produto").addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const novoProduto = {
+            nome: document.getElementById("nome").value,
+            valorCompra: parseFloat(document.getElementById("valorCompra").value),
+            valorVenda: parseFloat(document.getElementById("valorVenda").value),
+            quantidadeEstoque: parseInt(document.getElementById("quantidadeEstoque").value)
+        };
+
+        await fetch("/produtos", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(novoProduto)
+        });
+
+        document.getElementById("form-produto").reset();
+        carregarProdutos();
+    });
+
+    carregarProdutos();
+</script>
+</body>
+</html>
