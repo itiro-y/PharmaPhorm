@@ -34,6 +34,9 @@ public class ProdutoController {
 
     @DeleteMapping("/produtos/{id}")
     public void delete(@PathVariable Long id) {
+        if (!repository.existsById(id)) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Produto não encontrado");
+        }
         repository.deleteById(id);
     }
 

@@ -8,6 +8,7 @@ public class HomeController {
 
     @GetMapping("/")
     public String paginaInicial() {
+        String nome = "Jao";
         return "index"; // Procura templates/index.html
     }
 }
