@@ -11,15 +11,20 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Produto {
     @Id
     @GeneratedValue
-    private long id;
+    private Long id;
     private String nome;
     private Double valorCompra;
     private Double valorVenda;
     private Integer quantidadeEstoque;
 
+    public Produto(String nome, Double valorCompra, Double valorVenda, Integer quantidadeEstoque) {
+        this.nome = nome;
+        this.valorCompra = valorCompra;
+        this.valorVenda = valorVenda;
+        this.quantidadeEstoque = quantidadeEstoque;
+    }
 }
