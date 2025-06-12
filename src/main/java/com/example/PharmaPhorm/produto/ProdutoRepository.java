@@ -2,6 +2,6 @@ package com.example.PharmaPhorm.produto;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProdutoRepository extends JpaRepository<Produto, Long> {
-
+interface ProdutoRepository extends JpaRepository<Produto, Long> {
 }
+

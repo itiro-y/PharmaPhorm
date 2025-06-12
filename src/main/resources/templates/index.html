@@ -1,71 +1,208 @@
 <!DOCTYPE html>
-<html lang="pt-BR" xmlns:th="http://www.thymeleaf.org">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Produtos - PharmaPhorm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: Arial, sans-serif; margin: 20px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
-        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
-        th { background-color: #f0f0f0; }
-        h1 { color: #2a7ae2; }
-        input, button { padding: 5px; margin-top: 5px; }
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Style for the modal */
+        .modal {
+            transition: opacity 0.25s ease;
+        }
+        body.modal-active {
+            overflow-x: hidden;
+            overflow-y: hidden;
+        }
     </style>
 </head>
-<body>
-<h1>Cadastro de Produtos</h1>
+<body class="bg-gray-100 text-gray-800">
 
-<h2>Adicionar Produto</h2>
-<form id="form-produto">
-    <input type="text" id="nome" placeholder="Nome" required>
-    <input type="number" id="valorCompra" placeholder="Valor Compra" required step="0.01">
-    <input type="number" id="valorVenda" placeholder="Valor Venda" required step="0.01">
-    <input type="number" id="quantidadeEstoque" placeholder="Quantidade" required>
-    <button type="submit">Salvar</button>
-</form>
+<div class="container mx-auto p-4 md:p-8">
+    <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-blue-600">PharmaPhorm</h1>
+        <p class="text-gray-600">Gerenciamento de Produtos</p>
+    </header>
 
-<h2>Lista de Produtos</h2>
-<table id="tabela-produtos">
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Nome</th>
-        <th>Compra</th>
-        <th>Venda</th>
-        <th>Estoque</th>
-        <th>Ações</th>
-    </tr>
-    </thead>
-    <tbody></tbody>
-</table>
+    <main>
+        <!-- Add Product Form -->
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-bold mb-4">Adicionar Novo Produto</h2>
+            <form id="form-produto" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <div class="flex flex-col">
+                    <label for="nome" class="mb-1 font-semibold">Nome</label>
+                    <input type="text" id="nome" placeholder="Ex: Paracetamol" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="valorCompra" class="mb-1 font-semibold">Valor Compra (R$)</label>
+                    <input type="number" id="valorCompra" placeholder="10.50" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required step="0.01">
+                </div>
+                <div class="flex flex-col">
+                    <label for="valorVenda" class="mb-1 font-semibold">Valor Venda (R$)</label>
+                    <input type="number" id="valorVenda" placeholder="15.75" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required step="0.01">
+                </div>
+                <div class="flex flex-col">
+                    <label for="quantidadeEstoque" class="mb-1 font-semibold">Quantidade</label>
+                    <input type="number" id="quantidadeEstoque" placeholder="100" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors h-10">Salvar</button>
+            </form>
+        </div>
+
+        <!-- Product List -->
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Lista de Produtos</h2>
+            <div class="overflow-x-auto">
+                <table id="tabela-produtos" class="min-w-full bg-white">
+                    <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-4 text-left font-semibold">ID</th>
+                        <th class="py-3 px-4 text-left font-semibold">Nome</th>
+                        <th class="py-3 px-4 text-left font-semibold">Compra</th>
+                        <th class="py-3 px-4 text-left font-semibold">Venda</th>
+                        <th class="py-3 px-4 text-left font-semibold">Estoque</th>
+                        <th class="py-3 px-4 text-left font-semibold">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    <!-- Product rows will be inserted here by JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<!-- Edit Product Modal -->
+<div id="edit-modal" class="modal pointer-events-none fixed w-full h-full top-0 left-0 flex items-center justify-center opacity-0">
+    <div class="modal-overlay absolute w-full h-full bg-gray-900 opacity-50"></div>
+    <div class="modal-container bg-white w-11/12 md:max-w-md mx-auto rounded-lg shadow-lg z-50 overflow-y-auto">
+        <div class="modal-content py-4 text-left px-6">
+            <!-- Title -->
+            <div class="flex justify-between items-center pb-3">
+                <p class="text-2xl font-bold">Editar Produto</p>
+                <button id="close-modal-btn" class="modal-close cursor-pointer z-50">
+                    <svg class="fill-current text-black" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 18 18">
+                        <path d="M14.53 4.53l-1.06-1.06L9 7.94 4.53 3.47 3.47 4.53 7.94 9l-4.47 4.47 1.06 1.06L9 10.06l4.47 4.47 1.06-1.06L10.06 9z"></path>
+                    </svg>
+                </button>
+            </div>
+            <!-- Form -->
+            <form id="form-edit-produto">
+                <input type="hidden" id="edit-id">
+                <div class="mb-4">
+                    <label for="edit-nome" class="block text-gray-700 text-sm font-bold mb-2">Nome</label>
+                    <input type="text" id="edit-nome" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="mb-4">
+                    <label for="edit-valorCompra" class="block text-gray-700 text-sm font-bold mb-2">Valor Compra (R$)</label>
+                    <input type="number" id="edit-valorCompra" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required step="0.01">
+                </div>
+                <div class="mb-4">
+                    <label for="edit-valorVenda" class="block text-gray-700 text-sm font-bold mb-2">Valor Venda (R$)</label>
+                    <input type="number" id="edit-valorVenda" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required step="0.01">
+                </div>
+                <div class="mb-4">
+                    <label for="edit-quantidadeEstoque" class="block text-gray-700 text-sm font-bold mb-2">Quantidade em Estoque</label>
+                    <input type="number" id="edit-quantidadeEstoque" class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" required>
+                </div>
+                <div class="flex justify-end pt-2">
+                    <button type="button" id="cancel-edit-btn" class="bg-gray-500 text-white font-bold py-2 px-4 rounded mr-2 hover:bg-gray-600 transition-colors">Cancelar</button>
+                    <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded hover:bg-blue-700 transition-colors">Salvar Alterações</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 
 <script>
-    async function carregarProdutos() {
-        const response = await fetch("/produtos");
-        const produtos = await response.json();
-        const tbody = document.querySelector("#tabela-produtos tbody");
-        tbody.innerHTML = "";
+    const API_URL = "http://localhost:8081/produtos";
+    const addProductForm = document.getElementById("form-produto");
+    const productTableBody = document.querySelector("#tabela-produtos tbody");
 
-        produtos.forEach(produto => {
-            const tr = document.createElement("tr");
-            tr.innerHTML = `
-                    <td>${produto.id}</td>
-                    <td>${produto.nome}</td>
-                    <td>R$ ${produto.valorCompra.toFixed(2)}</td>
-                    <td>R$ ${produto.valorVenda.toFixed(2)}</td>
-                    <td>${produto.quantidadeEstoque}</td>
-                    <td><button onclick="deletarProduto(${produto.id})">Excluir</button></td>
+    const editModal = document.getElementById('edit-modal');
+    const closeModalBtn = document.getElementById('close-modal-btn');
+    const cancelEditBtn = document.getElementById('cancel-edit-btn');
+    const editProductForm = document.getElementById("form-edit-produto");
+
+    function openModal() {
+        editModal.classList.remove('pointer-events-none', 'opacity-0');
+        document.body.classList.add('modal-active');
+    }
+
+    function closeModal() {
+        editModal.classList.add('pointer-events-none', 'opacity-0');
+        document.body.classList.remove('modal-active');
+    }
+
+    closeModalBtn.addEventListener('click', closeModal);
+    cancelEditBtn.addEventListener('click', closeModal);
+
+
+    async function carregarProdutos() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to fetch products: ${response.status} ${errorText}`);
+            }
+            const produtos = await response.json();
+
+            productTableBody.innerHTML = "";
+
+            produtos.forEach(produto => {
+                const tr = document.createElement("tr");
+                tr.className = 'border-b hover:bg-gray-50';
+                tr.innerHTML = `
+                    <td class="py-3 px-4">${produto.id}</td>
+                    <td class="py-3 px-4">${produto.nome}</td>
+                    <td class="py-3 px-4">R$ ${produto.valorCompra.toFixed(2)}</td>
+                    <td class="py-3 px-4">R$ ${produto.valorVenda.toFixed(2)}</td>
+                    <td class="py-3 px-4">${produto.quantidadeEstoque}</td>
+                    <td class="py-3 px-4">
+                        <button onclick="abrirModalEdicao(${produto.id}, '${produto.nome}', ${produto.valorCompra}, ${produto.valorVenda}, ${produto.quantidadeEstoque})" class="bg-yellow-500 text-white text-sm font-bold py-1 px-2 rounded hover:bg-yellow-600 transition-colors mr-2">Editar</button>
+                        <button onclick="deletarProduto(${produto.id})" class="bg-red-500 text-white text-sm font-bold py-1 px-2 rounded hover:bg-red-600 transition-colors">Excluir</button>
+                    </td>
                 `;
-            tbody.appendChild(tr);
-        });
+                productTableBody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error("Error loading products:", error);
+            productTableBody.innerHTML = `<tr><td colspan="6" class="text-center py-4 text-red-500">${error.message}</td></tr>`;
+        }
     }
 
     async function deletarProduto(id) {
-        await fetch(`/produtos/${id}`, { method: "DELETE" });
-        carregarProdutos();
+        if (!confirm('Tem certeza que deseja excluir este produto?')) return;
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to delete product: ${response.status} ${errorText}`);
+            }
+            carregarProdutos(); // Refresh the list
+        } catch (error) {
+            console.error("Error deleting product:", error);
+            alert(`Error: ${error.message}`);
+        }
     }
 
-    document.getElementById("form-produto").addEventListener("submit", async (event) => {
+    function abrirModalEdicao(id, nome, valorCompra, valorVenda, quantidadeEstoque) {
+        document.getElementById("edit-id").value = id;
+        document.getElementById("edit-nome").value = nome;
+        document.getElementById("edit-valorCompra").value = valorCompra;
+        document.getElementById("edit-valorVenda").value = valorVenda;
+        document.getElementById("edit-quantidadeEstoque").value = quantidadeEstoque;
+        openModal();
+    }
+
+    addProductForm.addEventListener("submit", async (event) => {
         event.preventDefault();
 
         const novoProduto = {
@@ -75,17 +212,56 @@
             quantidadeEstoque: parseInt(document.getElementById("quantidadeEstoque").value)
         };
 
-        await fetch("/produtos", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(novoProduto)
-        });
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(novoProduto)
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to create product: ${response.status} ${errorText}`);
+            }
 
-        document.getElementById("form-produto").reset();
-        carregarProdutos();
+            addProductForm.reset();
+            carregarProdutos(); // Refresh the list
+        } catch (error) {
+            console.error("Error creating product:", error);
+            alert(`Error: ${error.message}`);
+        }
     });
 
-    carregarProdutos();
+    editProductForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const id = document.getElementById("edit-id").value;
+        const produtoAtualizado = {
+            nome: document.getElementById("edit-nome").value,
+            valorCompra: parseFloat(document.getElementById("edit-valorCompra").value),
+            valorVenda: parseFloat(document.getElementById("edit-valorVenda").value),
+            quantidadeEstoque: parseInt(document.getElementById("edit-quantidadeEstoque").value)
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(produtoAtualizado)
+            });
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Failed to update product: ${response.status} ${errorText}`);
+            }
+
+            closeModal();
+            carregarProdutos(); // Refresh the list
+        } catch (error) {
+            console.error("Error updating product:", error);
+            alert(`Error: ${error.message}`);
+        }
+    });
+
+    document.addEventListener('DOMContentLoaded', carregarProdutos);
 </script>
 </body>
 </html>
