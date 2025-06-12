@@ -12,7 +12,7 @@ class LoadFuncionariosDB {
     private static final Logger log = LoggerFactory.getLogger(LoadFuncionariosDB.class);
 
     @Bean
-    CommandLineRunner initDatabase(FuncionarioRepository repository) {
+    CommandLineRunner initDatabaseFuncionario(FuncionarioRepository repository) {
         repository.deleteAll();
         return args -> {
             log.info("Preloading " + repository.save(new Funcionario("Joao Fonseca", 42, "MASCULINO", "GERENCIA", 3000.0)));

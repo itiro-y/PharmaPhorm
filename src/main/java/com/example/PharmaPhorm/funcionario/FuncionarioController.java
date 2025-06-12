@@ -1,5 +1,7 @@
 package com.example.PharmaPhorm.funcionario;
 
+import com.example.PharmaPhorm.caixa.CaixaController;
+import com.example.PharmaPhorm.caixa.CaixaRepository;
 import com.example.PharmaPhorm.funcionario.Exceptions.FuncionarioNotFoundException;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,9 +10,13 @@ import java.util.List;
 @RestController
 class FuncionarioController {
     private final FuncionarioRepository repository;
+    private final CaixaRepository caixaRepository;
+    private final CaixaController caixaController;
 
-    FuncionarioController(FuncionarioRepository repository) {
+    FuncionarioController(FuncionarioRepository repository, CaixaRepository caixaRepository, CaixaController caixaController) {
         this.repository = repository;
+        this.caixaRepository = caixaRepository;
+        this.caixaController = caixaController;
     }
 
     @GetMapping("/funcionario")
@@ -47,5 +53,10 @@ class FuncionarioController {
     @DeleteMapping("/funcionario/{id}")
     void deleteFuncionario(@PathVariable Long id) {
         repository.deleteById(id);
+    }
+
+    @GetMapping("/funcionario/calcularParticipacaoLucro")
+    public double calcularParticipacaoLucros() {
+        return caixaController.estimarLucroMensal() * 0.1 / repository.findAll().size();
     }
 }
