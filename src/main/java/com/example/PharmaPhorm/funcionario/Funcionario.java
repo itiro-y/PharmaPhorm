@@ -1,10 +1,12 @@
 package com.example.PharmaPhorm.funcionario;
 import com.example.PharmaPhorm.Enum.Genero;
 import com.example.PharmaPhorm.Enum.Setor;
+import com.example.PharmaPhorm.negocio.Negocio;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
 import java.util.Objects;
 
 @Entity
@@ -22,6 +24,14 @@ public class Funcionario {
     private double VT = 200;
     private double PLANO_SAUDE = 3000;
     private double PLANO_ODONTO = 3000;
+
+    @ManyToMany
+    @JoinTable(
+            name = "negocio_participantes", // nome da tabela intermediária
+            joinColumns = @JoinColumn(name = "negocio_id"), // chave estrangeira para Funcionario
+            inverseJoinColumns = @JoinColumn(name = "funcionario_id") // chave estrangeira para Negocio
+    )
+    private List<Negocio> negociosParticipantes;
 
     public Funcionario() {
 
