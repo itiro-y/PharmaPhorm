@@ -28,7 +28,7 @@ services:
     networks:
       - pharmacy-net
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5433/pharmaphorma
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmaphorma
       SPRING_DATASOURCE_USERNAME: admin
       SPRING_DATASOURCE_PASSWORD: admin
 volumes:
