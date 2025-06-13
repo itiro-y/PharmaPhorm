@@ -1,6 +1,7 @@
 package com.example.PharmaPhorm.funcionario;
 import com.example.PharmaPhorm.Enum.Genero;
 import com.example.PharmaPhorm.Enum.Setor;
+//import com.example.PharmaPhorm.negocio.Negocio;
 import com.example.PharmaPhorm.negocio.Negocio;
 import jakarta.persistence.*;
 import lombok.Getter;
@@ -27,14 +28,22 @@ public class Funcionario {
 
     @ManyToMany
     @JoinTable(
-            name = "negocio_participantes", // nome da tabela intermediária
-            joinColumns = @JoinColumn(name = "negocio_id"), // chave estrangeira para Funcionario
-            inverseJoinColumns = @JoinColumn(name = "funcionario_id") // chave estrangeira para Negocio
+            name = "negocio_funcionario",
+            joinColumns = @JoinColumn(name = "funcionario_id"),
+            inverseJoinColumns = @JoinColumn(name = "negocio_id")
     )
     private List<Negocio> negociosParticipantes;
 
     public Funcionario() {
 
+    }
+
+    public Funcionario(String nome, int idade, String genero, String setor, double salariobase, int flag) {
+        this.nome = nome;
+        this.idade = idade;
+        this.genero = Genero.valueOf(genero.toUpperCase());
+        this.setor = Setor.valueOf(setor.toUpperCase());
+        this.salariobase = salariobase;
     }
 
     Funcionario(String nome, int idade, String genero, String setor, double salariobase){

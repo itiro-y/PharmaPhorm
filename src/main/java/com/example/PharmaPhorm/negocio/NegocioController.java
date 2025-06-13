@@ -3,6 +3,7 @@ package com.example.PharmaPhorm.negocio;
 import com.example.PharmaPhorm.negocio.Exceptions.NegocioNotFoundException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.RequestBody;
+import com.example.PharmaPhorm.negocio.NegocioRepository;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;

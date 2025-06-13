@@ -14,43 +14,43 @@ import java.util.List;
 public class Negocio {
     private @Id @GeneratedValue Long id;
 
-    private final Tipo tipo;
+    private Tipo tipo = Tipo.VENDA;
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(name = "transportadora_id") // chave estrangeira
     private Transportadora transportadora;
 
-    @OneToMany(mappedBy = "negocio")
-    private final List<ItemNegocio> itemsNegocio;
-
     @ManyToMany(mappedBy = "negociosParticipantes")
-    private final List<Funcionario> participantes;
+    private List<Funcionario> participantes = null;
+
+//    @OneToMany(mappedBy = "negocio")
+//    private final List<ItemNegocio> itemsNegocio;
 
 
-    public Negocio(){
-        this.tipo = Tipo.VENDA;
+
+    Negocio(String tipo, List<Funcionario> participantes, Transportadora transportadora) {
+        this.tipo = Tipo.valueOf(tipo.toUpperCase());
         this.status = Status.ABERTO;
-        this.transportadora = null;
-        this.itemsNegocio = new ArrayList<>();
-        this.participantes = new ArrayList<>();
-
-    }
-
-    Negocio(Tipo tipo, List<ItemNegocio> itemsNegocio, List<Funcionario> participantes, Transportadora transportadora) {
-        this.tipo = tipo;
-        this.status = Status.ABERTO;
-        this.itemsNegocio = itemsNegocio;
-
-        //diminui a quantidade de cada produto em estoque quando a negociação for de venda
-        if (tipo.equals(Tipo.VENDA)) {
-            for (ItemNegocio itemNegocio : itemsNegocio) {
-                itemNegocio.getProduto().setQuantidadeEstoque(itemNegocio.getProduto().getQuantidadeEstoque() - itemNegocio.getQuantidade());
-            }
-        }
 
         this.participantes = participantes;
         this.transportadora = transportadora;
+        //this.itemsNegocio = itemsNegocio;
+//        //diminui a quantidade de cada produto em estoque quando a negociação for de venda
+//        if (tipo.equals(Tipo.VENDA)) {
+//            for (ItemNegocio itemNegocio : itemsNegocio) {
+//                itemNegocio.getProduto().setQuantidadeEstoque(itemNegocio.getProduto().getQuantidadeEstoque() - itemNegocio.getQuantidade());
+//            }
+//        }
+    }
+
+    public Negocio(Tipo tipo, List<Funcionario> participantes){
+        this.tipo = tipo;
+        this.participantes = participantes;
+    }
+
+    public Negocio(){
+
     }
 
     // Getters e Setters
@@ -78,8 +78,7 @@ public class Negocio {
         return transportadora;
     }
 
-
-    public List<ItemNegocio> getItemsNegocio() {
-        return itemsNegocio;
-    }
+//    public List<ItemNegocio> getItemsNegocio() {
+//        return itemsNegocio;
+//    }
 }
