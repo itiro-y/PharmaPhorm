@@ -7,8 +7,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 public class Funcionario {
@@ -32,7 +31,7 @@ public class Funcionario {
             joinColumns = @JoinColumn(name = "funcionario_id"),
             inverseJoinColumns = @JoinColumn(name = "negocio_id")
     )
-    private List<Negocio> negociosParticipantes;
+    private Set<Negocio> negociosParticipantes;
 
     public Funcionario() {
 
@@ -45,6 +44,11 @@ public class Funcionario {
         this.genero = Genero.valueOf(genero);
         this.setor = Setor.valueOf(setor);
         this.salariobase = salariobase;
+        this.negociosParticipantes = new HashSet<>();
+    }
+
+    public void setNegociosParticipantes(Set<Negocio> negociosParticipantes) {
+        this.negociosParticipantes = negociosParticipantes;
     }
 
     public int getIdade() {

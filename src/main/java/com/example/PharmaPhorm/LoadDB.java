@@ -17,7 +17,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Configuration
 class LoadDB {
@@ -88,7 +90,12 @@ class LoadDB {
             log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora X", new ArrayList<>(List.of("Sul", "Sudeste")))));
 
             //Inicializa negocio
-            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", funcionarioRepository.findAll(), repositoryTransportadora.findAll().getFirst())));
+            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", new HashSet<>(funcionarioRepository.findAll()), repositoryTransportadora.findAll().getFirst())));
+
+            Funcionario funcionario = funcionarioRepository.findAll().getFirst(); // ou .stream().findFirst().orElseThrow()
+            Set<Negocio> negocios = new HashSet<>(repositoryNegocio.findAll());
+            funcionario.setNegociosParticipantes(negocios);
+            funcionarioRepository.save(funcionario);
 
             // ---Inicializa itemNegocio---
             log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(0), repositoryNegocio.findAll().get(0),100)));

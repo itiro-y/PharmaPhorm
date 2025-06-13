@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 public class Negocio {
@@ -23,14 +24,14 @@ public class Negocio {
     private Transportadora transportadora;
 
     @ManyToMany(mappedBy = "negociosParticipantes")
-    private List<Funcionario> participantes = null;
+    private Set<Funcionario> participantes;
 
     @OneToMany(mappedBy = "negocio")
     private  List<ItemNegocio> itemsNegocio = null;
 
 
 
-    public Negocio(String tipo, List<Funcionario> participantes, Transportadora transportadora) {
+    public Negocio(String tipo, Set<Funcionario> participantes, Transportadora transportadora) {
         this.tipo = Tipo.valueOf(tipo.toUpperCase());
         this.status = Status.ABERTO;
 
@@ -45,7 +46,7 @@ public class Negocio {
 //        }
     }
 
-    public Negocio(Tipo tipo, List<Funcionario> participantes){
+    public Negocio(Tipo tipo, Set<Funcionario> participantes){
         this.tipo = tipo;
         this.participantes = participantes;
     }
@@ -71,7 +72,7 @@ public class Negocio {
         this.status = status;
     }
 
-    public List<Funcionario> getParticipantes() {
+    public Set<Funcionario> getParticipantes() {
         return participantes;
     }
 
