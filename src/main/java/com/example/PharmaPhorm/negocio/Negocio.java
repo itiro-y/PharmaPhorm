@@ -18,7 +18,7 @@ public class Negocio {
     private Tipo tipo = Tipo.VENDA;
     private Status status;
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "transportadora_id") // chave estrangeira
     private Transportadora transportadora;
 

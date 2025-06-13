@@ -30,7 +30,12 @@ class LoadDB {
                                            ProdutoRepository produtoRepository,
                                            ItemNegocioRepository itemNegocioRepository,
                                            FuncionarioRepository funcionarioRepository) {
+        itemNegocioRepository.deleteAll();
         repositoryNegocio.deleteAll();
+        funcionarioRepository.deleteAll();
+        repositoryTransportadora.deleteAll();
+        produtoRepository.deleteAll();
+
         return args -> {
 
             // ---Inicializa Funcionarios---
@@ -79,17 +84,14 @@ class LoadDB {
                     10
             )));
 
-            // ---Inicializa itemNegocio---
-            log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(0), 100)));
-
-
             // ---Inicializa transportadora---
-            ArrayList<String> regioes = new ArrayList<>(List.of("Sul", "Sudeste"));
-            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora X", regioes)));
-
+            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora X", new ArrayList<>(List.of("Sul", "Sudeste")))));
 
             //Inicializa negocio
-            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", funcionarioRepository.findAll(), new Transportadora("Transportadora A", new ArrayList<>(List.of("Sul", "Sudeste"))))));
+            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", funcionarioRepository.findAll(), repositoryTransportadora.findAll().getFirst())));
+
+            // ---Inicializa itemNegocio---
+            log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(0), repositoryNegocio.findAll().get(0),100)));
 
 
         };

@@ -18,9 +18,10 @@ public class ItemNegocio {
     @JoinColumn(name = "negocio_id")
     private Negocio negocio;
 
-    public ItemNegocio(Produto produto, int quantidade) {
+    public ItemNegocio(Produto produto, Negocio negocio, int quantidade) {
         this.produto = produto;
         this.quantidade = quantidade;
+        this.negocio = negocio;
     }
 
     public ItemNegocio() {
