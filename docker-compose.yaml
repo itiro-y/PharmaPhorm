@@ -1,8 +1,11 @@
 #  ./mvnw clean package -Dspring.profiles.active=test
   #docker-compose up -d
 #docker ps
+#docker start {id}
 
 #Ao conectar ao banco, use o port 5433
+
+
 
 services:
   postgres:

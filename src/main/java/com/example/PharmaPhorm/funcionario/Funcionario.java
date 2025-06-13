@@ -1,11 +1,13 @@
 package com.example.PharmaPhorm.funcionario;
 import com.example.PharmaPhorm.Enum.Genero;
 import com.example.PharmaPhorm.Enum.Setor;
+//import com.example.PharmaPhorm.negocio.Negocio;
+import com.example.PharmaPhorm.negocio.Negocio;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.Objects;
+import java.util.*;
 
 @Entity
 public class Funcionario {
@@ -24,18 +26,32 @@ public class Funcionario {
     private double PLANO_SAUDE = 3000;
     private double PLANO_ODONTO = 3000;
 
+    @ManyToMany
+    @JoinTable(
+            name = "negocio_funcionario",
+            joinColumns = @JoinColumn(name = "funcionario_id"),
+            inverseJoinColumns = @JoinColumn(name = "negocio_id")
+    )
+    private Set<Negocio> negociosParticipantes;
+
     public Funcionario() {
 
     }
 
-    Funcionario(String nome, int idade, String genero, String setor, double salariobase){
+
+    public Funcionario(String nome, int idade, String genero, String setor, double salariobase){
         this.nome = nome;
         this.idade = idade;
         this.genero = Genero.valueOf(genero.toUpperCase());
         this.setor = Setor.valueOf(setor.toUpperCase());
         this.salariobase = salariobase;
+        this.negociosParticipantes = new HashSet<>();
         this.salarioLiquido = this.salariobase - calcularValorIR();
         ajustarBeneficiosPorSetor();
+    }
+
+    public void setNegociosParticipantes(Set<Negocio> negociosParticipantes) {
+        this.negociosParticipantes = negociosParticipantes;
     }
 
     public int getIdade() {
@@ -172,5 +188,22 @@ public class Funcionario {
     @Override
     public int hashCode() {
         return Objects.hash(id, nome, idade, genero, setor, salariobase, VA, VR, VT, PLANO_SAUDE, PLANO_ODONTO);
+    }
+
+    @Override
+    public String toString() {
+        return "Funcionario{" +
+                "nome='" + nome + '\'' +
+                ", idade=" + idade +
+                ", genero=" + genero +
+                ", setor=" + setor +
+                ", salariobase=" + salariobase +
+                ", id=" + id +
+                ", VR=" + VR +
+                ", VA=" + VA +
+                ", VT=" + VT +
+                ", PLANO_SAUDE=" + PLANO_SAUDE +
+                ", PLANO_ODONTO=" + PLANO_ODONTO +
+                '}';
     }
 }
