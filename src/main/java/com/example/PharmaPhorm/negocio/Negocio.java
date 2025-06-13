@@ -3,6 +3,7 @@ package com.example.PharmaPhorm.negocio;
 import com.example.PharmaPhorm.Enum.Status;
 import com.example.PharmaPhorm.Enum.Tipo;
 import com.example.PharmaPhorm.funcionario.Funcionario;
+import com.example.PharmaPhorm.itemnegocio.ItemNegocio;
 import com.example.PharmaPhorm.transportadora.Transportadora;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
@@ -24,12 +25,12 @@ public class Negocio {
     @ManyToMany(mappedBy = "negociosParticipantes")
     private List<Funcionario> participantes = null;
 
-//    @OneToMany(mappedBy = "negocio")
-//    private final List<ItemNegocio> itemsNegocio;
+    @OneToMany(mappedBy = "negocio")
+    private  List<ItemNegocio> itemsNegocio = null;
 
 
 
-    Negocio(String tipo, List<Funcionario> participantes, Transportadora transportadora) {
+    public Negocio(String tipo, List<Funcionario> participantes, Transportadora transportadora) {
         this.tipo = Tipo.valueOf(tipo.toUpperCase());
         this.status = Status.ABERTO;
 

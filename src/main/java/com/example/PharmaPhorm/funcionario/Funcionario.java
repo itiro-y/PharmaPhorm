@@ -38,15 +38,8 @@ public class Funcionario {
 
     }
 
-    public Funcionario(String nome, int idade, String genero, String setor, double salariobase, int flag) {
-        this.nome = nome;
-        this.idade = idade;
-        this.genero = Genero.valueOf(genero.toUpperCase());
-        this.setor = Setor.valueOf(setor.toUpperCase());
-        this.salariobase = salariobase;
-    }
 
-    Funcionario(String nome, int idade, String genero, String setor, double salariobase){
+    public Funcionario(String nome, int idade, String genero, String setor, double salariobase){
         this.nome = nome;
         this.idade = idade;
         this.genero = Genero.valueOf(genero);
