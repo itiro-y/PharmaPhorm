@@ -1,17 +1,14 @@
 package com.example.PharmaPhorm.transportadora;
 
-import com.example.PharmaPhorm.negocio.Negocio;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-@NoArgsConstructor
 @Entity
 public class Transportadora {
-    private @Id
-    @GeneratedValue long id;
+    private @Id @GeneratedValue long id;
 
     private String nome;
 
@@ -22,6 +19,10 @@ public class Transportadora {
 
 //    @OneToMany(mappedBy = "transportadora")
 //    private List<Negocio> negocios;
+
+    public Transportadora() {
+
+    }
 
     public Transportadora(String nome, ArrayList<String> regioes) {
         this.nome = nome;
@@ -59,5 +60,7 @@ public class Transportadora {
         regioes.add(regiao);
     }
 
-
+    public void setRegioes(List<String> regioes) {
+        this.regioes = regioes;
+    }
 }
