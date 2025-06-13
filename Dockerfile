@@ -1,10 +1,10 @@
-#FROM eclipse-temurin:23-jdk
-#
-#WORKDIR /app
-#
-#COPY target/*.jar app.jar
-#
-#ENTRYPOINT ["java", "-jar", "app.jar"]
+FROM eclipse-temurin:23-jdk
+
+WORKDIR /app
+
+COPY target/*.jar app.jar
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
 
 # Stage 1: Build the application
 #FROM maven:3.9.6-eclipse-temurin-23 AS builder

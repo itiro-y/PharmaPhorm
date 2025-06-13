@@ -18,20 +18,20 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - pharmacy-net
-#
-#  spring-app:
-#    build: .
-#    container_name: pharmaphorma-app
-#    ports:
-#      - "8081:8080"
-#    depends_on:
-#      - postgres
-#    networks:
-#      - pharmacy-net
-#    environment:
-#      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmaphorma
-#      SPRING_DATASOURCE_USERNAME: admin
-#      SPRING_DATASOURCE_PASSWORD: admin
+
+  spring-app:
+    build: .
+    container_name: pharmaphorma-app
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    networks:
+      - pharmacy-net
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmaphorma
+      SPRING_DATASOURCE_USERNAME: admin
+      SPRING_DATASOURCE_PASSWORD: admin
 volumes:
   pgdata:
 
