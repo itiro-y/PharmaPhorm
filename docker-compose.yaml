@@ -1,4 +1,5 @@
-#docker-compose up -d
+#  ./mvnw clean package -Dspring.profiles.active=test
+  #docker-compose up -d
 #docker ps
 
 #Ao conectar ao banco, use o port 5433
@@ -17,7 +18,7 @@ services:
       - pgdata:/var/lib/postgresql/data
     networks:
       - pharmacy-net
-
+#
 #  spring-app:
 #    build: .
 #    container_name: pharmaphorma-app
