@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Funcionários - PharmaPhorm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .modal { transition: opacity 0.25s ease; }
+        body.modal-active { overflow: hidden; }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+<div class="container mx-auto p-4 md:p-8">
+    <header class="mb-8">
+        <h1 class="text-3xl md:text-4xl font-bold text-blue-600">PharmaPhorm</h1>
+        <p class="text-gray-600">Gerenciamento de Funcionários</p>
+    </header>
+
+    <main>
+        <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-2xl font-bold mb-4">Adicionar Novo Funcionário</h2>
+            <form id="form-funcionario" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4 items-end">
+                <div class="flex flex-col">
+                    <label for="nome" class="mb-1 font-semibold">Nome</label>
+                    <input type="text" id="nome" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="idade" class="mb-1 font-semibold">Idade</label>
+                    <input type="number" id="idade" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <div class="flex flex-col">
+                    <label for="genero" class="mb-1 font-semibold">Gênero</label>
+                    <select id="genero" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="MASCULINO">Masculino</option>
+                        <option value="FEMININO">Feminino</option>
+                        <option value="NAO_INFORMADO">Não Informado</option>
+                    </select>
+                </div>
+                <div class="flex flex-col">
+                    <label for="setor" class="mb-1 font-semibold">Setor</label>
+                    <select id="setor" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                        <option value="GERENCIA">Gerência</option>
+                        <option value="ATENDIMENTO_AO_CLIENTE">Atendimento ao Cliente</option>
+                        <option value="GESTAO_DE_PESSOAS">Gestão de Pessoas</option>
+                        <option value="FINANCEIRO">Financeiro</option>
+                        <option value="VENDAS">Vendas</option>
+                        <option value="ALMOXARIFADO">Almoxarifado</option>
+                        <option value="TRANSPORTADORAS">Transportadoras</option>
+                    </select>
+                </div>
+                <div class="flex flex-col">
+                    <label for="salariobase" class="mb-1 font-semibold">Salário Base</label>
+                    <input type="number" step="0.01" id="salariobase" class="p-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" required>
+                </div>
+                <button type="submit" class="bg-blue-600 text-white font-bold py-2 px-4 rounded-md hover:bg-blue-700 transition-colors h-10">Salvar</button>
+            </form>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md">
+            <h2 class="text-2xl font-bold mb-4">Lista de Funcionários</h2>
+            <div class="overflow-x-auto">
+                <table id="tabela-funcionarios" class="min-w-full bg-white">
+                    <thead class="bg-gray-200">
+                    <tr>
+                        <th class="py-3 px-4 text-left font-semibold">ID</th>
+                        <th class="py-3 px-4 text-left font-semibold">Nome</th>
+                        <th class="py-3 px-4 text-left font-semibold">Idade</th>
+                        <th class="py-3 px-4 text-left font-semibold">Gênero</th>
+                        <th class="py-3 px-4 text-left font-semibold">Setor</th>
+                        <th class="py-3 px-4 text-left font-semibold">Salário Base</th>
+                        <th class="py-3 px-4 text-left font-semibold">Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody class="text-gray-700">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="modal-editar" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+    <div class="bg-white rounded-lg shadow-lg p-6 w-full max-w-lg">
+        <h2 class="text-xl font-bold mb-4">Editar Funcionário</h2>
+        <form id="form-editar">
+            <input type="hidden" id="edit-id" />
+            <div class="mb-4">
+                <label for="edit-nome" class="block font-semibold mb-1">Nome</label>
+                <input type="text" id="edit-nome" class="w-full p-2 border rounded-md" required />
+            </div>
+            <div class="mb-4">
+                <label for="edit-idade" class="block font-semibold mb-1">Idade</label>
+                <input type="number" id="edit-idade" class="w-full p-2 border rounded-md" required />
+            </div>
+
+            <div class="mb-4">
+                <label for="edit-genero" class="block font-semibold mb-1">Gênero</label>
+                <select id="edit-genero" class="w-full p-2 border rounded-md" required>
+                    <option value="MASCULINO">Masculino</option>
+                    <option value="FEMININO">Feminino</option>
+                    <option value="NAO_INFORMADO">Não Informado</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="edit-setor" class="block font-semibold mb-1">Setor</label>
+                <select id="edit-setor" class="w-full p-2 border rounded-md" required>
+                    <option value="GERENCIA">Gerência</option>
+                    <option value="ATENDIMENTO_AO_CLIENTE">Atendimento ao Cliente</option>
+                    <option value="GESTAO_DE_PESSOAS">Gestão de Pessoas</option>
+                    <option value="FINANCEIRO">Financeiro</option>
+                    <option value="VENDAS">Vendas</option>
+                    <option value="ALMOXARIFADO">Almoxarifado</option>
+                    <option value="TRANSPORTADORAS">Transportadoras</option>
+                </select>
+            </div>
+
+            <div class="mb-4">
+                <label for="edit-salariobase" class="block font-semibold mb-1">Salário Base</label>
+                <input type="number" step="0.01" id="edit-salariobase" class="w-full p-2 border rounded-md" required />
+            </div>
+            <div class="flex justify-end gap-2">
+                <button type="button" onclick="fecharModal()" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">Cancelar</button>
+                <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+<script>
+    const API_URL = "http://localhost:8081/funcionario";
+    const form = document.getElementById("form-funcionario");
+    const tbody = document.querySelector("#tabela-funcionarios tbody");
+    const modal = document.getElementById("modal-editar");
+    const formEditar = document.getElementById("form-editar");
+
+    // =======================================================
+    //  NOVA FUNÇÃO: LÓGICA PARA CRIAR NOVO FUNCIONÁRIO
+    // =======================================================
+    form.addEventListener("submit", async e => {
+        e.preventDefault(); // Evita o recarregamento da página
+
+        const novoFuncionario = {
+            nome: document.getElementById("nome").value,
+            idade: parseInt(document.getElementById("idade").value),
+            genero: document.getElementById("genero").value,
+            setor: document.getElementById("setor").value,
+            salariobase: parseFloat(document.getElementById("salariobase").value)
+        };
+
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(novoFuncionario)
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao criar funcionário.");
+            }
+
+            form.reset(); // Limpa o formulário
+            carregarFuncionarios(); // Recarrega a lista
+        } catch (error) {
+            console.error(error);
+            alert(`Erro: ${error.message}`);
+        }
+    });
+
+    async function carregarFuncionarios() {
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) throw new Error("Erro ao carregar funcionários. Verifique se a API está online.");
+            const funcionarios = await response.json();
+            tbody.innerHTML = "";
+            funcionarios.forEach(f => {
+                const tr = document.createElement("tr");
+                tr.className = 'border-b hover:bg-gray-50';
+                tr.innerHTML = `
+                  <td class="py-3 px-4">${f.id}</td>
+                  <td class="py-3 px-4">${f.nome}</td>
+                  <td class="py-3 px-4">${f.idade}</td>
+                  <td class="py-3 px-4">${f.genero}</td>
+                  <td class="py-3 px-4">${f.setor}</td>
+                  <td class="py-3 px-4">${f.salariobase}</td>
+                  <td class="py-3 px-4 flex gap-2">
+                    <button onclick='abrirModal(${JSON.stringify(f)})' class="bg-yellow-500 text-white text-sm font-bold py-1 px-2 rounded hover:bg-yellow-600">Editar</button>
+                    <button onclick="deletarFuncionario(${f.id})" class="bg-red-500 text-white text-sm font-bold py-1 px-2 rounded hover:bg-red-600">Excluir</button>
+                  </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error(error);
+            tbody.innerHTML = `<tr><td colspan="7" class="text-center py-4 text-red-500">${error.message}</td></tr>`;
+        }
+    }
+
+    function abrirModal(f) {
+        document.getElementById("edit-id").value = f.id;
+        document.getElementById("edit-nome").value = f.nome;
+        document.getElementById("edit-idade").value = f.idade;
+        document.getElementById("edit-genero").value = f.genero;
+        document.getElementById("edit-setor").value = f.setor;
+        document.getElementById("edit-salariobase").value = f.salariobase;
+        modal.classList.remove("hidden");
+    }
+
+    function fecharModal() {
+        modal.classList.add("hidden");
+    }
+
+    formEditar.addEventListener("submit", async e => {
+        e.preventDefault();
+        const id = document.getElementById("edit-id").value;
+        const funcionarioAtualizado = {
+            nome: document.getElementById("edit-nome").value,
+            idade: document.getElementById("edit-idade").value,
+            genero: document.getElementById("edit-genero").value,
+            setor: document.getElementById("edit-setor").value,
+            salariobase: document.getElementById("edit-salariobase").value
+        };
+
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(funcionarioAtualizado)
+            });
+            if (!response.ok) throw new Error("Erro ao atualizar funcionário.");
+            fecharModal();
+            carregarFuncionarios();
+        } catch (error) {
+            console.error(error);
+            alert(`Erro: ${error.message}`);
+        }
+    });
+
+    async function deletarFuncionario(id) {
+        if (!confirm("Tem certeza que deseja excluir este funcionário?")) return;
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            if (!response.ok) throw new Error("Erro ao excluir funcionário.");
+            carregarFuncionarios();
+        } catch (error) {
+            console.error(error);
+            alert(`Erro: ${error.message}`);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", carregarFuncionarios);
+</script>
+</body>
+</html>

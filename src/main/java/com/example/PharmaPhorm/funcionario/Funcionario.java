@@ -18,6 +18,7 @@ public class Funcionario {
     private Genero genero;
     private Setor setor;
     private double salariobase;
+    private double salarioLiquido;
 
     private double VA = 300;
     private double VR = 300;
@@ -41,10 +42,12 @@ public class Funcionario {
     public Funcionario(String nome, int idade, String genero, String setor, double salariobase){
         this.nome = nome;
         this.idade = idade;
-        this.genero = Genero.valueOf(genero);
-        this.setor = Setor.valueOf(setor);
+        this.genero = Genero.valueOf(genero.toUpperCase());
+        this.setor = Setor.valueOf(setor.toUpperCase());
         this.salariobase = salariobase;
         this.negociosParticipantes = new HashSet<>();
+        this.salarioLiquido = this.salariobase - calcularValorIR();
+        ajustarBeneficiosPorSetor();
     }
 
     public void setNegociosParticipantes(Set<Negocio> negociosParticipantes) {
@@ -138,6 +141,41 @@ public class Funcionario {
     public void setPLANO_ODONTO(double PLANO_ODONTO) {
         this.PLANO_ODONTO = PLANO_ODONTO;
     }
+
+    // Métodos de Lógica de Negócio
+    private void ajustarBeneficiosPorSetor() {
+        switch (this.setor) {
+            case ATENDIMENTO_AO_CLIENTE:
+            case VENDAS:
+                this.PLANO_ODONTO -= 1000;
+                break;
+            case FINANCEIRO:
+            case ALMOXARIFADO:
+            case GESTAO_DE_PESSOAS:
+                this.VA += 200;
+                this.VR += 200;
+                this.PLANO_SAUDE += 500;
+                this.PLANO_ODONTO -= 500;
+                break;
+            case GERENCIA:
+                this.VA += 700;
+                this.VR += 700;
+                this.PLANO_SAUDE += 1200;
+                break;
+            default:
+                // Nenhum benefício adicional para outros setores
+                break;
+        }
+    }
+
+    public double calcularValorIR() {
+        if (salariobase <= 2428.80) return 0.0;
+        if (salariobase <= 2826.65) return (salariobase * 0.075) - 182.16;
+        if (salariobase <= 3751.05) return (salariobase * 0.15) - 394.16;
+        if (salariobase <= 4664.68) return (salariobase * 0.225) - 675.49;
+        return (salariobase * 0.275) - 908.75;
+    }
+
 
     @Override
     public boolean equals(Object o) {

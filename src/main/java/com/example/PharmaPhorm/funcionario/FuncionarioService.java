@@ -1,4 +1,4 @@
-//package com.example.PharmaPhorm.funcionario;
-//
-//public class FuncionarioService {
-//}
+package com.example.PharmaPhorm.funcionario;
+
+public class FuncionarioService {
+}
