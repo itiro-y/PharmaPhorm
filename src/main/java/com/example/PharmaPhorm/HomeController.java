@@ -8,7 +8,17 @@ public class HomeController {
 
     @GetMapping("/")
     public String paginaInicial() {
-        String nome = "Jao";
         return "index"; // Procura templates/index.html
     }
+
+    @GetMapping("/funcionarios")
+    public String paginaFuncionario() {
+       return "funcionarios";
+    }
+
+    @GetMapping("/produto")
+    public String paginaProduto() {
+        return "produto";
+    }
+
 }
