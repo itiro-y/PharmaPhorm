@@ -35,13 +35,22 @@ public class NegocioController {
     @PostMapping("/negocio")
     Negocio addNegocio(@RequestBody Negocio negocio) {
         if (negocio.getTipo() == Tipo.COMPRA) {
+            //iterando por cada um dos itens negociados
             for (ItemNegocio item : negocio.getItemsNegocio()) {
+                //caso o item ja exista, sera alterado a quantidade de estoque.
                 if (produtoRepository.existsById(item.getId())) {
                     Produto produtoNegociado = produtoRepository.getById(item.getId());
                     produtoNegociado.adicionarEstoque(item.getQuantidade());
                 } else {
                     produtoRepository.save(item.getProduto());
                 }
+            }
+        } else if (negocio.getTipo() == Tipo.VENDA) {
+            //iterando por cada um dos itens negociados
+            for (ItemNegocio item : negocio.getItemsNegocio()) {
+                //caso o item ja exista, sera alterado a quantidade de estoque.
+                Produto produtoNegociado = produtoRepository.getById(item.getId());
+                produtoNegociado.diminuirEstoque(item.getQuantidade());
             }
         }
         return repository.save(negocio);
