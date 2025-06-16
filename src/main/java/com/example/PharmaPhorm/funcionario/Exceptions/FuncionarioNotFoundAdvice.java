@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 @RestControllerAdvice
 class FuncionarioNotFoundAdvice {
+
     @ExceptionHandler(FuncionarioNotFoundException.class)
+
     @ResponseStatus(HttpStatus.NOT_FOUND)
+
     String funcionarioNotFoundHandle(FuncionarioNotFoundException ex){
         return ex.getMessage();
     }
