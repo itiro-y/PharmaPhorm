@@ -88,4 +88,9 @@ public class Produto {
         quantidadeEstoque += estoqueAdicional;
         return quantidadeEstoque;
     }
+
+    public Integer diminuirEstoque(Integer estoque) {
+        quantidadeEstoque -= estoque;
+        return quantidadeEstoque;
+    }
 }
