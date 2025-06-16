@@ -15,7 +15,7 @@ public class Transportadora {
     @ElementCollection
     private List<String> regioes;
 
-    private boolean isAtivo;
+    private boolean isAtivo=true;
 
 //    @OneToMany(mappedBy = "transportadora")
 //    private List<Negocio> negocios;
