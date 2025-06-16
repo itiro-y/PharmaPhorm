@@ -37,7 +37,7 @@ public class Negocio {
 
         this.participantes = participantes;
         this.transportadora = transportadora;
-        //this.itemsNegocio = itemsNegocio;
+        this.itemsNegocio = itemsNegocio;
 //        //diminui a quantidade de cada produto em estoque quando a negociação for de venda
 //        if (tipo.equals(Tipo.VENDA)) {
 //            for (ItemNegocio itemNegocio : itemsNegocio) {
@@ -83,9 +83,10 @@ public class Negocio {
     public List<ItemNegocio> getItemsNegocio() {
         return itemsNegocio;
     }
-
+  
     public void setItemsNegocio(List<ItemNegocio> itemsNegocio) {
         this.itemsNegocio = itemsNegocio;
     }
+
 }
 

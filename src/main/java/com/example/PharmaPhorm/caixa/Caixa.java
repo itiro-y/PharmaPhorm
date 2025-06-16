@@ -1,5 +1,6 @@
 package com.example.PharmaPhorm.caixa;
 
+import com.example.PharmaPhorm.caixa.Exceptions.SaldoInsuficienteException;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -38,6 +39,12 @@ public class Caixa {
     }
 
     public void removerValor(double total) {
-        if (total > 0) this.valor -= total;
+        if (total > 0){
+            if(valor<=getValor()){
+                this.valor -= total;
+            }else{
+                throw new SaldoInsuficienteException();
+            }
+        }
     }
 }
