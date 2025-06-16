@@ -14,7 +14,8 @@ import java.util.Set;
 
 @Entity
 public class Negocio {
-    private @Id @GeneratedValue Long id;
+    private @Id
+    @GeneratedValue Long id;
 
     private Tipo tipo = Tipo.VENDA;
     private Status status;
@@ -27,8 +28,7 @@ public class Negocio {
     private Set<Funcionario> participantes;
 
     @OneToMany(mappedBy = "negocio")
-    private  List<ItemNegocio> itemsNegocio = null;
-
+    private List<ItemNegocio> itemsNegocio = null;
 
 
     public Negocio(String tipo, Set<Funcionario> participantes, Transportadora transportadora) {
@@ -46,12 +46,12 @@ public class Negocio {
 //        }
     }
 
-    public Negocio(Tipo tipo, Set<Funcionario> participantes){
+    public Negocio(Tipo tipo, Set<Funcionario> participantes) {
         this.tipo = tipo;
         this.participantes = participantes;
     }
 
-    public Negocio(){
+    public Negocio() {
 
     }
 
@@ -80,7 +80,12 @@ public class Negocio {
         return transportadora;
     }
 
-//    public List<ItemNegocio> getItemsNegocio() {
-//        return itemsNegocio;
-//    }
+    public List<ItemNegocio> getItemsNegocio() {
+        return itemsNegocio;
+    }
+
+    public void setItemsNegocio(List<ItemNegocio> itemsNegocio) {
+        this.itemsNegocio = itemsNegocio;
+    }
 }
+

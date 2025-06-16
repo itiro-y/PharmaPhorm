@@ -1,6 +1,7 @@
 package com.example.PharmaPhorm.produto;
 
 //import com.example.PharmaPhorm.negocio.ItemNegocio;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -27,11 +28,11 @@ public class Produto {
 //    @OneToMany(mappedBy = "negocio")
 //    private final List<ItemNegocio> itemsNegocio;
 
-    public Produto(){
+    public Produto() {
         this.nome = "";
-        this.valorCompra=0.0;
-        this.valorVenda=0.0;
-        this.quantidadeEstoque=0;
+        this.valorCompra = 0.0;
+        this.valorVenda = 0.0;
+        this.quantidadeEstoque = 0;
         //this.itemsNegocio=new ArrayList<>();
     }
 
@@ -81,5 +82,10 @@ public class Produto {
 
     public void setQuantidadeEstoque(Integer quantidadeEstoque) {
         this.quantidadeEstoque = quantidadeEstoque;
+    }
+
+    public Integer adicionarEstoque(Integer estoqueAdicional) {
+        quantidadeEstoque += estoqueAdicional;
+        return quantidadeEstoque;
     }
 }
