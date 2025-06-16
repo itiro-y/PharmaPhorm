@@ -2,6 +2,7 @@ package com.example.PharmaPhorm.itemnegocio;
 
 import com.example.PharmaPhorm.negocio.Negocio;
 import com.example.PharmaPhorm.produto.Produto;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 
 @Entity
@@ -16,6 +17,7 @@ public class ItemNegocio {
 
     @ManyToOne
     @JoinColumn(name = "negocio_id")
+    @JsonBackReference
     private Negocio negocio;
 
     public ItemNegocio(Produto produto, Negocio negocio, int quantidade) {

@@ -33,7 +33,7 @@ public class NegocioController {
                      ProdutoRepository produtoRepository) {
         this.repository = negocioRepository;
         this.caixaRepository = caixaRepository;
-        this.produtoRepository = produtoRepository
+        this.produtoRepository = produtoRepository;
 
     }
 
