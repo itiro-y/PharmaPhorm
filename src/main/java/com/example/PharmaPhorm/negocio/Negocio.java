@@ -5,6 +5,7 @@ import com.example.PharmaPhorm.Enum.Tipo;
 import com.example.PharmaPhorm.funcionario.Funcionario;
 import com.example.PharmaPhorm.itemnegocio.ItemNegocio;
 import com.example.PharmaPhorm.transportadora.Transportadora;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 
@@ -27,7 +28,8 @@ public class Negocio {
     @ManyToMany(mappedBy = "negociosParticipantes")
     private Set<Funcionario> participantes;
 
-    @OneToMany(mappedBy = "negocio")
+    @OneToMany(mappedBy = "negocio", orphanRemoval = true)
+    @JsonManagedReference
     private List<ItemNegocio> itemsNegocio = null;
 
 
