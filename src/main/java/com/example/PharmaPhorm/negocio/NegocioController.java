@@ -40,6 +40,7 @@ public class NegocioController {
                 //caso o item ja exista, sera alterado a quantidade de estoque.
                 if (produtoRepository.existsById(item.getId())) {
                     Produto produtoNegociado = produtoRepository.getById(item.getId());
+                    produtoNegociado.adicionarEstoque(item.getQuantidade());
                 } else {
                     produtoRepository.save(item.getProduto());
                 }
