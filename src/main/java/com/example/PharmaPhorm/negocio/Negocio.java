@@ -60,8 +60,16 @@ public class Negocio {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
     public Tipo getTipo() {
         return tipo;
+    }
+
+    public void setTipo(Tipo tipo) {
+        this.tipo = tipo;
     }
 
     public Status getStatus() {
@@ -76,17 +84,24 @@ public class Negocio {
         return participantes;
     }
 
+    public void setParticipantes(Set<Funcionario> participantes) {
+        this.participantes = participantes;
+    }
+
     public Transportadora getTransportadora() {
         return transportadora;
+    }
+
+    public void setTransportadora(Transportadora transportadora) {
+        this.transportadora = transportadora;
     }
 
     public List<ItemNegocio> getItemsNegocio() {
         return itemsNegocio;
     }
-  
+
     public void setItemsNegocio(List<ItemNegocio> itemsNegocio) {
         this.itemsNegocio = itemsNegocio;
     }
-
 }
 
