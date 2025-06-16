@@ -17,10 +17,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @Configuration
 class LoadDB {
@@ -33,7 +30,7 @@ class LoadDB {
                                            ProdutoRepository produtoRepository,
                                            ItemNegocioRepository itemNegocioRepository,
                                            FuncionarioRepository funcionarioRepository,
-                                           JdbcTemplate jdbcTemplate) {
+                                           JdbcTemplate jdbcTemplate, NegocioRepository negocioRepository) {
 
         jdbcTemplate.execute("DELETE FROM negocio_funcionario");
         itemNegocioRepository.deleteAll();
@@ -90,20 +87,24 @@ class LoadDB {
                     10
             )));
 
+
             // ---Inicializa transportadora---
             log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora X", new ArrayList<>(List.of("Sul", "Sudeste")))));
 
             //Inicializa negocio
-            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", new HashSet<>(funcionarioRepository.findAll()), repositoryTransportadora.findAll().getFirst())));
-
-            Funcionario funcionario = funcionarioRepository.findAll().getFirst(); // ou .stream().findFirst().orElseThrow()
-            Set<Negocio> negocios = new HashSet<>(repositoryNegocio.findAll());
-            funcionario.setNegociosParticipantes(negocios);
-            funcionarioRepository.save(funcionario);
+            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", new HashSet<>(funcionarioRepository.findAll()), repositoryTransportadora.findAll().getFirst(), null)));
 
             // ---Inicializa itemNegocio---
-            log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(0), repositoryNegocio.findAll().get(0),100)));
+            log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(0), repositoryNegocio.findAll().getFirst(),100)));
+            log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(1), repositoryNegocio.findAll().getFirst(),100)));
 
+            List<Funcionario> lista_funcionarios = funcionarioRepository.findAll();
+            for(Funcionario f : lista_funcionarios) {
+                f.setNegociosParticipantes(new HashSet<>(new ArrayList<>(Arrays.asList(repositoryNegocio.findAll().getFirst()))));
+                funcionarioRepository.save(f);
+            }
+
+            negocioRepository.findAll().getFirst().setItemsNegocio(new HashSet<>(itemNegocioRepository.findAll()));
 
         };
     }
