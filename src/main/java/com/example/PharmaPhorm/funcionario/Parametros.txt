@@ -4,4 +4,3 @@
 	    "genero": "masculino",
 	    "setor": "gerencia",
 	    "salariobase": 1000.0
-    }

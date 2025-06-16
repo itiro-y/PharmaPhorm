@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.core.JdbcTemplate;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -31,10 +32,13 @@ class LoadDB {
                                            TransportadoraRepository repositoryTransportadora,
                                            ProdutoRepository produtoRepository,
                                            ItemNegocioRepository itemNegocioRepository,
-                                           FuncionarioRepository funcionarioRepository) {
+                                           FuncionarioRepository funcionarioRepository,
+                                           JdbcTemplate jdbcTemplate) {
+
+        jdbcTemplate.execute("DELETE FROM negocio_funcionario");
         itemNegocioRepository.deleteAll();
-        repositoryNegocio.deleteAll();
         funcionarioRepository.deleteAll();
+        repositoryNegocio.deleteAll();
         repositoryTransportadora.deleteAll();
         produtoRepository.deleteAll();
 
