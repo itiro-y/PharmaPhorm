@@ -53,12 +53,17 @@ public class NegocioController {
                 difCaixa += item.getProduto().getValorCompra()*item.getQuantidade();
             }
             caixa.removerValor(difCaixa); //Pode lançar a exceção SaldoInsuficienteException
+
+            //Adicionar logica para aumentar a quantidade de produtos no estoque
+
         }else{
             for(ItemNegocio item : negocio.getItemsNegocio()){
                 difCaixa += item.getProduto().getValorVenda()*item.getQuantidade();
             }
             caixa.adicionarValor(difCaixa);
         }
+
+        //Alterar o status do negocio para concluido, persistir a alteração no caixa e no negocio
         negocio.setStatus(Status.CONCLUIDO);
         caixaRepository.save(caixa);
         repository.save(negocio);
@@ -68,7 +73,14 @@ public class NegocioController {
     //Metodo para alterar o status de um negócio para cancelado
     @PutMapping("/negocio/cancelar/{id}")
     Negocio cancelarNegocioByID(@PathVariable Long id ) {
-//
+        Negocio negocio = repository.findById(id).orElseThrow(() -> new NegocioNotFoundException(id));
+        negocio.setStatus(Status.CANCELADO);
+
+        //Adicionar logica para devolver produtos ao estoque se o tipo de negocio for venda
+
+        //Persistir as alterações no negocio
+        repository.save(negocio);
+        return negocio;
     }
 
 }
