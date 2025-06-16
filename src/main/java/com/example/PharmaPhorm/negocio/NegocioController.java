@@ -30,10 +30,10 @@ public class NegocioController {
 
     //Injeção de dependência da classe Repository
     NegocioController(NegocioRepository negocioRepository, CaixaRepository caixaRepository,
-                     ProdutoRepository produtoRepository) {
+                      ProdutoRepository produtoRepository) {
         this.repository = negocioRepository;
         this.caixaRepository = caixaRepository;
-        this.produtoRepository = produtoRepository
+        this.produtoRepository = produtoRepository;
 
     }
 
@@ -49,8 +49,7 @@ public class NegocioController {
             for (ItemNegocio item : negocio.getItemsNegocio()) {
                 //caso o item ja exista, sera alterado a quantidade de estoque.
                 if (produtoRepository.existsById(item.getId())) {
-                    Produto produtoNegociado = produtoRepository.getById(item.getId());
-                    produtoNegociado.adicionarEstoque(item.getQuantidade());
+                    return repository.save(negocio);
                 } else {
                     produtoRepository.save(item.getProduto());
                 }
@@ -59,7 +58,8 @@ public class NegocioController {
             //iterando por cada um dos itens negociados
             for (ItemNegocio item : negocio.getItemsNegocio()) {
                 //caso o item ja exista, sera alterado a quantidade de estoque.
-                Produto produtoNegociado = produtoRepository.getById(item.getId());
+                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
                 produtoNegociado.diminuirEstoque(item.getQuantidade());
             }
         }
@@ -73,23 +73,28 @@ public class NegocioController {
 
     //Metodo para alterar o status de um negócio para concluido
     @PutMapping("/negocio/concluir/{id}")
-    Negocio concluirNegocioByID(@PathVariable Long id ) {
+    Negocio concluirNegocioByID(@PathVariable Long id) {
 
         Negocio negocio = repository.findById(id).orElseThrow(() -> new NegocioNotFoundException(id));
         Caixa caixa = caixaRepository.findAll().getFirst();
         double difCaixa = 0.0;
 
-        if(negocio.getTipo().equals(Tipo.COMPRA)){
-            for(ItemNegocio item : negocio.getItemsNegocio()){
-                difCaixa += item.getProduto().getValorCompra()*item.getQuantidade();
+        if (negocio.getTipo().equals(Tipo.COMPRA)) {
+            for (ItemNegocio item : negocio.getItemsNegocio()) {
+                difCaixa += item.getProduto().getValorCompra() * item.getQuantidade();
             }
             caixa.removerValor(difCaixa); //Pode lançar a exceção SaldoInsuficienteException
 
             //Adicionar logica para aumentar a quantidade de produtos no estoque
+            for (ItemNegocio item : negocio.getItemsNegocio()) {
+                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+                produtoNegociado.adicionarEstoque(item.getQuantidade());
+            }
 
-        }else{
-            for(ItemNegocio item : negocio.getItemsNegocio()){
-                difCaixa += item.getProduto().getValorVenda()*item.getQuantidade();
+        } else {
+            for (ItemNegocio item : negocio.getItemsNegocio()) {
+                difCaixa += item.getProduto().getValorVenda() * item.getQuantidade();
             }
             caixa.adicionarValor(difCaixa);
         }
@@ -103,12 +108,17 @@ public class NegocioController {
 
     //Metodo para alterar o status de um negócio para cancelado
     @PutMapping("/negocio/cancelar/{id}")
-    Negocio cancelarNegocioByID(@PathVariable Long id ) {
+    Negocio cancelarNegocioByID(@PathVariable Long id) {
         Negocio negocio = repository.findById(id).orElseThrow(() -> new NegocioNotFoundException(id));
         negocio.setStatus(Status.CANCELADO);
 
         //Adicionar logica para devolver produtos ao estoque se o tipo de negocio for venda
-
+        for (ItemNegocio item : negocio.getItemsNegocio()) {
+            //caso o item ja exista, sera alterado a quantidade de estoque.
+            Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+            produtoNegociado.adicionarEstoque(item.getQuantidade());
+        }
         //Persistir as alterações no negocio
         repository.save(negocio);
         return negocio;
