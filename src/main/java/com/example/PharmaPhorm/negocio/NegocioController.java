@@ -23,13 +23,8 @@ import com.example.PharmaPhorm.negocio.NegocioRepository;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-<<<<<<< kevin
+
 import java.util.*;
-=======
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
->>>>>>> main
 import java.util.stream.Collectors;
 
 @RestController
@@ -116,29 +111,29 @@ public class NegocioController {
         request.getNegocio().getItemsNegocio().clear();
         request.getNegocio().getItemsNegocio().addAll(items);
         repository.save(request.getNegocio());
-=======
-        negocio.setItemsNegocio(new HashSet<>(items));
 
-        if (negocio.getTipo().equals(Tipo.COMPRA)) {
-            //iterando por cada um dos itens negociados
-            for (ItemNegocio item : negocio.getItemsNegocio()) {
-                //caso o item ja exista, sera alterado a quantidade de estoque.
-                if (produtoRepository.existsById(item.getId())) {
-                    return repository.save(negocio);
-                } else {
-                    produtoRepository.save(item.getProduto());
-                }
-            }
-        } else if (negocio.getTipo().equals(Tipo.VENDA)) {
-            //iterando por cada um dos itens negociados
-            for (ItemNegocio item : negocio.getItemsNegocio()) {
-                //caso o item ja exista, sera alterado a quantidade de estoque.
-                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
-                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
-                produtoNegociado.diminuirEstoque(item.getQuantidade());
-            }
-        }
->>>>>>> main
+//        negocio.setItemsNegocio(new HashSet<>(items));
+//
+//        if (negocio.getTipo().equals(Tipo.COMPRA)) {
+//            //iterando por cada um dos itens negociados
+//            for (ItemNegocio item : negocio.getItemsNegocio()) {
+//                //caso o item ja exista, sera alterado a quantidade de estoque.
+//                if (produtoRepository.existsById(item.getId())) {
+//                    return repository.save(negocio);
+//                } else {
+//                    produtoRepository.save(item.getProduto());
+//                }
+//            }
+//        } else if (negocio.getTipo().equals(Tipo.VENDA)) {
+//            //iterando por cada um dos itens negociados
+//            for (ItemNegocio item : negocio.getItemsNegocio()) {
+//                //caso o item ja exista, sera alterado a quantidade de estoque.
+//                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+//                produtoNegociado.diminuirEstoque(item.getQuantidade());
+//            }
+//        }
+
 
         return request.getNegocio();
     }
