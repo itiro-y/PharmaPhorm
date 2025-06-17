@@ -5,8 +5,17 @@
   "participantes": [
     { "id": 202 },
     { "id": 203 }
-  ],
-  "itemsNegocio": [
-    { "id": 152 }
   ]
+}
+{
+    "idProdutos": [
+    152,
+    14
+  ]
+}
+{
+    "quantidades": [
+      152,
+      77
+    ]
 }

@@ -23,9 +23,13 @@ import com.example.PharmaPhorm.negocio.NegocioRepository;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+<<<<<<< kevin
+import java.util.*;
+=======
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+>>>>>>> main
 import java.util.stream.Collectors;
 
 @RestController
@@ -59,23 +63,60 @@ public class NegocioController {
     }
 
     @PostMapping("/negocio")
-    Negocio addNegocio(@RequestBody Negocio negocio) {
-        Transportadora t = transportadoraRepository.findById(negocio.getTransportadora().getId())
+    Negocio addNegocio(@RequestBody NegocioRequestDTO request) {
+        Transportadora t = transportadoraRepository.findById(request.getNegocio().getTransportadora().getId())
                 .orElseThrow(() -> new RuntimeException("transportadora nao encontrada"));
-        negocio.setTransportadora(t);
+        request.getNegocio().setTransportadora(t);
 
         // Fetch and set the participantes
-        Set<Funcionario> funcionarios = negocio.getParticipantes().stream()
+        Set<Funcionario> funcionarios = request.getNegocio().getParticipantes().stream()
                 .map(f -> funcionarioRepository.findById(f.getId())
                         .orElseThrow(() -> new RuntimeException("Funcionario não encontrado: " + f.getId())))
                 .collect(Collectors.toSet());
-        negocio.setParticipantes(funcionarios);
+        request.getNegocio().setParticipantes(funcionarios);
 
+        /*
         // Fetch and set the itemsNegocio
         List<ItemNegocio> items = negocio.getItemsNegocio().stream()
                 .map(item -> itemNegocioRepository.findById(item.getId())
                         .orElseThrow(() -> new RuntimeException("ItemNegocio não encontrado: " + item.getId())))
                 .collect(Collectors.toList());
+<<<<<<< kevin
+        */
+
+        List<ItemNegocio> items = new ArrayList<>();
+        for(int i=0; i<request.getQuantidades().size(); i++){
+            Produto p = produtoRepository.findById(request.getIdProdutos().get(i)).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado")
+            );
+            ItemNegocio item = new ItemNegocio(p, null, request.getQuantidades().get(i));
+            itemNegocioRepository.save(item);
+            items.add(item);
+        }
+        request.getNegocio().setItemsNegocio(new HashSet<>(items));
+
+        repository.save(request.getNegocio());
+
+        for(Funcionario f : funcionarios){
+            f.addNegociosParticipantes(request.getNegocio());
+            funcionarioRepository.save(f);
+        }
+
+
+        for(ItemNegocio i : items){
+            i.addNegocio(request.getNegocio());
+            itemNegocioRepository.save(i);
+
+            Produto p = produtoRepository.findById(i.getProduto().getId()).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+            p.addItemNegocio(i);
+            produtoRepository.save(p);
+        }
+
+        request.getNegocio().getItemsNegocio().clear();
+        request.getNegocio().getItemsNegocio().addAll(items);
+        repository.save(request.getNegocio());
+=======
         negocio.setItemsNegocio(new HashSet<>(items));
 
         if (negocio.getTipo().equals(Tipo.COMPRA)) {
@@ -97,8 +138,9 @@ public class NegocioController {
                 produtoNegociado.diminuirEstoque(item.getQuantidade());
             }
         }
+>>>>>>> main
 
-        return repository.save(negocio);
+        return request.getNegocio();
     }
 
 //    @PostMapping("/negocio")
