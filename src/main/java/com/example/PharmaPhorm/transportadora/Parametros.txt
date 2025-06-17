@@ -1,7 +1,5 @@
     {
-        "nome": "Transportadora X",
-        "regioes": [
-            "Sul",
-            "Sudeste"
-        ]
+      "nome": "Transportadora X",
+      "regioes": ["Norte", "Sul"],
+      "ativo": false
     }

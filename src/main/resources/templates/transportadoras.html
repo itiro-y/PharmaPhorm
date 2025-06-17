@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Transportadoras - PharmaPhorm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo para suavizar a transição dos modais */
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 lg:p-8">
+
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-4">
+            <a href="/" title="Voltar para a página principal" class="text-gray-500 hover:text-indigo-600 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8a5 5 0 015 5v1" />
+                </svg>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Gestão de Transportadoras</h1>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 rounded-lg shadow-md mb-8">
+        <h2 class="text-2xl font-bold mb-4">Adicionar Nova Transportadora</h2>
+        <form id="form-transportadora" class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+            <div class="flex flex-col">
+                <label for="nome" class="block text-sm font-medium text-gray-700">Nome da Transportadora</label>
+                <input type="text" id="nome" placeholder="Ex: Jadlog" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+            <div class="flex flex-col md:col-span-1">
+                <label for="regioes" class="block text-sm font-medium text-gray-700">Regiões (separadas por vírgula)</label>
+                <input type="text" id="regioes" placeholder="Ex: Sul, Sudeste" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500" required>
+            </div>
+            <button type="submit" class="bg-indigo-600 text-white font-bold py-2 px-4 rounded-lg shadow-md hover:bg-indigo-700 transition h-10">Adicionar</button>
+        </form>
+    </div>
+
+    <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Regiões Atendidas</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+            </tr>
+            </thead>
+            <tbody id="tabela-transportadoras" class="bg-white divide-y divide-gray-200">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="edit-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60" onclick="fecharModalEdicao(event)">
+    <div class="modal-content bg-white rounded-lg p-6 w-11/12 max-w-lg mx-auto shadow-xl transform scale-95">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">Editar Transportadora</h2>
+        <form id="form-editar" class="space-y-4">
+            <input type="hidden" id="edit-id">
+            <div>
+                <label for="edit-nome" class="block text-sm font-medium text-gray-700">Nome da Transportadora</label>
+                <input type="text" id="edit-nome" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div>
+                <label for="edit-regioes" class="block text-sm font-medium text-gray-700">Regiões (separadas por vírgula)</label>
+                <input type="text" id="edit-regioes" class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm" required>
+            </div>
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="fecharModalEdicao(null, true)" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition">Cancelar</button>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition">Salvar Alterações</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    const API_URL = "http://localhost:8081/transportadora";
+    const tbody = document.getElementById("tabela-transportadoras");
+    const addForm = document.getElementById("form-transportadora");
+    const editForm = document.getElementById("form-editar");
+    const editModal = document.getElementById('edit-modal');
+
+
+    function abrirModalEdicao(id, nome, regioes) {
+        document.getElementById("edit-id").value = id;
+        document.getElementById("edit-nome").value = nome;
+        document.getElementById("edit-regioes").value = regioes.join(", ");
+
+        editModal.classList.remove('hidden');
+        editModal.classList.add('flex');
+        setTimeout(() => document.querySelector('#edit-modal .modal-content').classList.remove('scale-95'), 10);
+    }
+
+    function fecharModalEdicao(event, forceClose = false) {
+        if (forceClose || (event && event.target.id === 'edit-modal')) {
+            document.querySelector('#edit-modal .modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                editModal.classList.add('hidden');
+                editModal.classList.remove('flex');
+            }, 300);
+        }
+    }
+
+    async function carregarTransportadoras() {
+        try {
+            const response = await fetch(API_URL);
+            const transportadoras = await response.json();
+            tbody.innerHTML = "";
+            transportadoras.forEach(t => {
+                const statusClass = t.ativo ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+                const toggleButtonClass = t.ativo ? 'text-gray-600 hover:text-gray-900' : 'text-green-600 hover:text-green-900';
+
+                const tr = document.createElement("tr");
+                tr.className = 'hover:bg-gray-50 transition duration-150';
+                tr.innerHTML = `
+                    <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${t.id}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${t.nome}</td>
+                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${t.regioes.join(", ")}</td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                            ${t.ativo ? "Ativa" : "Inativa"}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
+                        <button onclick='abrirModalEdicao(${t.id}, "${t.nome}", ${JSON.stringify(t.regioes)})' class="text-gray-600 hover:text-gray-900" title="Editar">Editar</button>
+                        <button onclick="toggleAtivo(${t.id})" class="${toggleButtonClass}" title="${t.ativo ? 'Desativar' : 'Ativar'}">${t.ativo ? 'Desativar' : 'Ativar'}</button>
+                        <button onclick="deletarTransportadora(${t.id})" class="text-red-600 hover:text-red-900" title="Excluir">Excluir</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } catch (error) {
+            console.error("Erro ao carregar transportadoras:", error);
+            tbody.innerHTML = `<tr><td colspan="5" class="text-center py-10 text-red-500">Falha ao carregar dados.</td></tr>`;
+        }
+    }
+
+    addForm.addEventListener("submit", async e => {
+        e.preventDefault();
+        const nova = {
+            nome: document.getElementById("nome").value,
+            regioes: document.getElementById("regioes").value.split(',').map(r => r.trim()).filter(r => r) // Filtra strings vazias
+        };
+        try {
+            const response = await fetch(API_URL, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(nova)
+            });
+            if(!response.ok) throw new Error('Falha ao criar transportadora.');
+            addForm.reset();
+            carregarTransportadoras();
+        } catch(error) {
+            alert(error.message);
+        }
+    });
+
+    async function deletarTransportadora(id) {
+        if (!confirm("Tem certeza que deseja excluir esta transportadora?")) return;
+        try {
+            const response = await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+            if(!response.ok) throw new Error('Falha ao excluir. A transportadora pode estar em uso.');
+            carregarTransportadoras();
+        } catch(error) {
+            alert(error.message);
+        }
+    }
+
+    editForm.addEventListener("submit", async e => {
+        e.preventDefault();
+        const id = document.getElementById("edit-id").value;
+        const atualizada = {
+            id: parseInt(id),
+            nome: document.getElementById("edit-nome").value,
+            regioes: document.getElementById("edit-regioes").value.split(',').map(r => r.trim()).filter(r => r)
+        };
+        try {
+            const response = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(atualizada)
+            });
+            if(!response.ok) throw new Error('Falha ao atualizar transportadora.');
+            fecharModalEdicao(null, true);
+            carregarTransportadoras();
+        } catch (error) {
+            alert(error.message);
+        }
+    });
+
+    async function toggleAtivo(id) {
+        try {
+            // No backend, o ideal é ter um endpoint PATCH específico para isso, ex: /transportadora/{id}/toggle-status
+            // Mas, para funcionar com a sua estrutura atual, vamos buscar, alterar e enviar de volta.
+            const res = await fetch(`${API_URL}/${id}`);
+            if(!res.ok) throw new Error('Transportadora não encontrada.');
+
+            const transportadora = await res.json();
+            transportadora.ativo = !transportadora.ativo; // Inverte o status
+
+            const updateRes = await fetch(`${API_URL}/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(transportadora)
+            });
+
+            if(!updateRes.ok) throw new Error('Falha ao alterar status.');
+
+            carregarTransportadoras();
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", carregarTransportadoras);
+</script>
+</body>
+</html>

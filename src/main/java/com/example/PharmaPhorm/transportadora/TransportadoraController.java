@@ -34,6 +34,7 @@ public class TransportadoraController {
                 .map(f -> {
                     f.setNome(trans.getNome());
                     f.setRegioes(trans.getRegioes());
+                    f.setAtivo(trans.isAtivo());
                     return transportadoraRepository.save(f);
                 })
                 .orElseGet(() -> {

@@ -28,7 +28,7 @@ public class Negocio {
     @ManyToMany(mappedBy = "negociosParticipantes")
     private Set<Funcionario> participantes;
 
-    @OneToMany(mappedBy = "negocio", orphanRemoval = true)
+    @OneToMany(mappedBy = "negocio", orphanRemoval = true, cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private Set<ItemNegocio> itemsNegocio = null;
 
@@ -55,6 +55,11 @@ public class Negocio {
         return tipo;
     }
 
+    // ✅ SETTER ADICIONADO
+    public void setTipo(Tipo tipo) {
+        this.tipo = tipo;
+    }
+
     public Status getStatus() {
         return status;
     }
@@ -67,17 +72,26 @@ public class Negocio {
         return participantes;
     }
 
+    // ✅ SETTER ADICIONADO
+    public void setParticipantes(Set<Funcionario> participantes) {
+        this.participantes = participantes;
+    }
+
     public Transportadora getTransportadora() {
         return transportadora;
+    }
+
+    // ✅ SETTER ADICIONADO
+    public void setTransportadora(Transportadora transportadora) {
+        this.transportadora = transportadora;
     }
 
     public Set<ItemNegocio> getItemsNegocio() {
         return itemsNegocio;
     }
-  
+
     public void setItemsNegocio(Set<ItemNegocio> itemsNegocio) {
         this.itemsNegocio = itemsNegocio;
     }
 
 }
-
