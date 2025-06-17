@@ -32,7 +32,7 @@ public class Funcionario {
             joinColumns = @JoinColumn(name = "funcionario_id"),
             inverseJoinColumns = @JoinColumn(name = "negocio_id")
     )
-    private Set<Negocio> negociosParticipantes;
+    private Set<Negocio> negociosParticipantes=null;
 
     public Funcionario() {
 
@@ -52,6 +52,10 @@ public class Funcionario {
 
     public void setNegociosParticipantes(Set<Negocio> negociosParticipantes) {
         this.negociosParticipantes = negociosParticipantes;
+    }
+
+    public void addNegociosParticipantes(Negocio negocio){
+        this.negociosParticipantes.add(negocio);
     }
 
     public int getIdade() {

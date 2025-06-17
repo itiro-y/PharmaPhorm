@@ -1,7 +1,8 @@
 package com.example.PharmaPhorm.produto;
 
-//import com.example.PharmaPhorm.negocio.ItemNegocio;
+import com.example.PharmaPhorm.itemnegocio.ItemNegocio;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
@@ -12,7 +13,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Entity
@@ -25,15 +28,15 @@ public class Produto {
     private Double valorVenda;
     private Integer quantidadeEstoque;
 
-//    @OneToMany(mappedBy = "negocio")
-//    private final List<ItemNegocio> itemsNegocio;
+
+    @OneToMany(mappedBy = "produto")
+    private Set<ItemNegocio> itemsNegocio = new HashSet<>();
 
     public Produto() {
         this.nome = "";
         this.valorCompra = 0.0;
         this.valorVenda = 0.0;
         this.quantidadeEstoque = 0;
-        //this.itemsNegocio=new ArrayList<>();
     }
 
     public Produto(String nome, Double valorCompra, Double valorVenda, Integer quantidadeEstoque) {
@@ -41,7 +44,10 @@ public class Produto {
         this.valorCompra = valorCompra;
         this.valorVenda = valorVenda;
         this.quantidadeEstoque = quantidadeEstoque;
-        //this.itemsNegocio = new ArrayList<>();
+    }
+
+    public void addItemNegocio(ItemNegocio itemNegocio) {
+        this.itemsNegocio.add(itemNegocio);
     }
 
     public Long getId() {
@@ -93,4 +99,5 @@ public class Produto {
         quantidadeEstoque -= estoque;
         return quantidadeEstoque;
     }
+
 }
