@@ -23,6 +23,7 @@ import com.example.PharmaPhorm.negocio.NegocioRepository;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -75,7 +76,7 @@ public class NegocioController {
                 .map(item -> itemNegocioRepository.findById(item.getId())
                         .orElseThrow(() -> new RuntimeException("ItemNegocio não encontrado: " + item.getId())))
                 .collect(Collectors.toList());
-        negocio.setItemsNegocio(items);
+        negocio.setItemsNegocio(new HashSet<>(items));
 
         return repository.save(negocio);
     }
