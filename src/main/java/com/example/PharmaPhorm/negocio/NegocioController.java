@@ -132,6 +132,14 @@ public class NegocioController {
 //            }
 //        }
 
+        //diminuir o estoque, caso seja venda
+        if(request.getNegocio().getTipo().equals(Tipo.VENDA))
+        for (ItemNegocio item : request.getNegocio().getItemsNegocio()) {
+                //caso o item ja exista, sera alterado a quantidade de estoque.
+                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+                produtoNegociado.diminuirEstoque(item.getQuantidade());
+            }
 
         return request.getNegocio();
     }
