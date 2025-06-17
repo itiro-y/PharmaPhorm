@@ -111,8 +111,6 @@ public class NegocioController {
         request.getNegocio().getItemsNegocio().clear();
         request.getNegocio().getItemsNegocio().addAll(items);
         repository.save(request.getNegocio());
-
-//        negocio.setItemsNegocio(new HashSet<>(items));
 //
 //        if (negocio.getTipo().equals(Tipo.COMPRA)) {
 //            //iterando por cada um dos itens negociados
