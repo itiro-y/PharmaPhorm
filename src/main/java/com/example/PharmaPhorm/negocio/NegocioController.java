@@ -23,8 +23,10 @@ import com.example.PharmaPhorm.negocio.NegocioRepository;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @RestController
@@ -149,6 +151,7 @@ public class NegocioController {
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
 
                 produtoNegociado.diminuirEstoque(quantidade);
+                produtoRepository.save(produtoNegociado);
             }
         }
 
