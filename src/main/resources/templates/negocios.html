@@ -357,36 +357,31 @@
         }
     }
 
+    // Dentro do arquivo negocios.html, substitua a função salvarNegocio
+
     async function salvarNegocio(event) {
         event.preventDefault();
 
         const id = document.getElementById('negocio-id').value;
-        const tipo = document.getElementById('tipo').value;
-        const transportadoraId = document.getElementById('transportadora').value;
-        const participantesIds = Array.from(document.querySelectorAll('input[name="participantes"]:checked')).map(cb => cb.value);
 
-        if (itensNoFormulario.length === 0) {
-            alert("Adicione pelo menos um item ao negócio.");
-            return;
-        }
-
+        // Captura os dados do formulário no novo formato DTO
         const negocioData = {
-            tipo,
-            transportadora: { id: transportadoraId },
-            participantes: participantesIds.map(id => ({ id })),
-            itemsNegocio: itensNoFormulario.map(item => ({
-                produto: { id: item.produto.id },
+            tipo: document.getElementById('tipo').value,
+            transportadoraId: document.getElementById('transportadora').value,
+            participanteIds: Array.from(document.querySelectorAll('input[name="participantes"]:checked')).map(cb => parseInt(cb.value)),
+            items: itensNoFormulario.map(item => ({
+                produtoId: parseInt(item.produto.id),
                 quantidade: item.quantidade
             }))
         };
 
-        const method = id ? 'PUT' : 'POST';
-        const url = id ? `${API_URL}/negocio/${id}` : `${API_URL}/negocio`;
-
-        if (id) {
-            negocioData.id = id;
+        if (negocioData.items.length === 0) {
+            alert("Adicione pelo menos um item ao negócio.");
+            return;
         }
 
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/negocio/${id}` : `${API_URL}/negocio`;
 
         try {
             const response = await fetch(url, {
@@ -396,21 +391,17 @@
             });
 
             if (!response.ok) {
-                const errorText = await response.text();
-                try {
-                    const errorJson = JSON.parse(errorText);
-                    throw new Error(errorJson.message || 'Erro ao salvar negócio');
-                } catch(e) {
-                    throw new Error(errorText || 'Erro desconhecido ao salvar negócio');
-                }
+                // Tenta ler a mensagem de erro do backend
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Erro ao salvar negócio');
             }
 
             fecharModalForm(null, true);
             carregarNegocios();
 
-        } catch(error) {
+        } catch (error) {
             console.error("Falha ao salvar:", error);
-            alert("Erro ao salvar negócio: " + error.message);
+            alert("Erro: " + error.message);
         }
     }
 

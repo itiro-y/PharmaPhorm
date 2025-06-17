@@ -1,8 +1,8 @@
 package com.example.PharmaPhorm.transportadora;
 
 import com.example.PharmaPhorm.negocio.Negocio;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.NoArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -13,23 +13,27 @@ public class Transportadora {
 
     private String nome;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER) // EAGER para facilitar o acesso às regiões
     private List<String> regioes;
 
-    private boolean isAtivo=true;
+    private boolean isAtivo = true;
 
-    @OneToMany(mappedBy = "transportadora")
+    // ✅ ANOTAÇÃO @JsonIgnore ADICIONADA
+    // Impede um loop infinito quando o sistema for converter o objeto para JSON.
+    @OneToMany(mappedBy = "transportadora", fetch = FetchType.LAZY)
+    @JsonIgnore
     private List<Negocio> negocios;
 
     public Transportadora() {
-
+        this.regioes = new ArrayList<>();
+        this.negocios = new ArrayList<>();
     }
 
     public Transportadora(String nome, ArrayList<String> regioes) {
         this.nome = nome;
         this.regioes = regioes;
-        isAtivo = true;
-        negocios = new ArrayList<>();
+        this.isAtivo = true;
+        this.negocios = new ArrayList<>();
     }
 
     // Getters e Setters
@@ -45,6 +49,10 @@ public class Transportadora {
         return regioes;
     }
 
+    public void setRegioes(List<String> regioes) {
+        this.regioes = regioes;
+    }
+
     public long getId() {
         return id;
     }
@@ -57,11 +65,16 @@ public class Transportadora {
         isAtivo = ativo;
     }
 
-    public void addRegioes(String regiao){
-        regioes.add(regiao);
+    // ✅ GETTERS E SETTERS PARA A LISTA DE NEGÓCIOS ADICIONADOS
+    public List<Negocio> getNegocios() {
+        return negocios;
     }
 
-    public void setRegioes(List<String> regioes) {
-        this.regioes = regioes;
+    public void setNegocios(List<Negocio> negocios) {
+        this.negocios = negocios;
+    }
+
+    public void addRegioes(String regiao){
+        regioes.add(regiao);
     }
 }
