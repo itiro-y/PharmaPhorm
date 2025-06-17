@@ -2,6 +2,7 @@ package com.example.PharmaPhorm.funcionario;
 import com.example.PharmaPhorm.Enum.Genero;
 import com.example.PharmaPhorm.Enum.Setor;
 import com.example.PharmaPhorm.negocio.Negocio;
+import com.example.PharmaPhorm.negocio.Negocio;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import java.util.HashSet;
@@ -32,7 +33,7 @@ public class Funcionario {
             inverseJoinColumns = @JoinColumn(name = "negocio_id")
     )
     @JsonIgnore // Importante para evitar loop infinito na serialização JSON
-    private Set<Negocio> negociosParticipantes;
+    private Set<Negocio> negociosParticipantes=null;
 
     public Funcionario() {
         this.negociosParticipantes = new HashSet<>();
@@ -57,6 +58,10 @@ public class Funcionario {
 
     public void setNegociosParticipantes(Set<Negocio> negociosParticipantes) {
         this.negociosParticipantes = negociosParticipantes;
+    }
+
+    public void addNegociosParticipantes(Negocio negocio){
+        this.negociosParticipantes.add(negocio);
     }
 
     public int getIdade() {
@@ -195,11 +200,30 @@ public class Funcionario {
         return Objects.hash(id);
     }
 
+
     @Override
     public String toString() {
+        return "Funcionario{" +
+                "nome='" + nome + '\'' +
+                ", idade=" + idade +
+                ", genero=" + genero +
+                ", setor=" + setor +
+                ", salariobase=" + salariobase +
+                ", id=" + id +
+                ", VR=" + VR +
+                ", VA=" + VA +
+                ", VT=" + VT +
+                ", PLANO_SAUDE=" + PLANO_SAUDE +
+                ", PLANO_ODONTO=" + PLANO_ODONTO +
+                '}';
+    }
+
+    public String toStringResumido() {
         return "Funcionario{" +
                 "id=" + id +
                 ", nome='" + nome + '\'' +
                 '}';
     }
+    
+
 }

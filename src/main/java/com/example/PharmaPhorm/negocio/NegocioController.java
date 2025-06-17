@@ -4,6 +4,9 @@ import com.example.PharmaPhorm.Enum.Status;
 import com.example.PharmaPhorm.Enum.Tipo;
 import com.example.PharmaPhorm.caixa.Caixa;
 import com.example.PharmaPhorm.caixa.CaixaRepository;
+import com.example.PharmaPhorm.caixa.Exceptions.SaldoInsuficienteException;
+import com.example.PharmaPhorm.funcionario.Funcionario;
+import com.example.PharmaPhorm.funcionario.FuncionarioRepository;
 import com.example.PharmaPhorm.funcionario.Funcionario;
 import com.example.PharmaPhorm.funcionario.FuncionarioRepository;
 import com.example.PharmaPhorm.itemnegocio.ItemNegocio;
@@ -11,6 +14,8 @@ import com.example.PharmaPhorm.itemnegocio.ItemNegocioRepository;
 import com.example.PharmaPhorm.negocio.Exceptions.NegocioNotFoundException;
 import com.example.PharmaPhorm.produto.Produto;
 import com.example.PharmaPhorm.produto.ProdutoRepository;
+import com.example.PharmaPhorm.transportadora.Transportadora;
+import com.example.PharmaPhorm.transportadora.TransportadoraRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +25,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import java.util.*;
+import java.util.stream.Collectors;
+
 @RestController
 @CrossOrigin(origins = "*")
 public class NegocioController {
@@ -27,9 +35,14 @@ public class NegocioController {
     // ✅ CAMPOS (VARIÁVEIS) REORGANIZADOS PARA O TOPO DA CLASSE
     private final NegocioRepository repository;
     private final ProdutoRepository produtoRepository;
+    private final FuncionarioRepository funcionarioRepository;
+    private final ItemNegocioRepository itemNegocioRepository;
+
+    //Injeção de dependência da classe Repository
     private final CaixaRepository caixaRepository;
     private final ItemNegocioRepository itemNegocioRepository;
     private final FuncionarioRepository funcionarioRepository;
+    private final TransportadoraRepository transportadoraRepository;
 
     // ✅ CONSTRUTOR ÚNICO E CORRETO
     public NegocioController(NegocioRepository negocioRepository,
@@ -37,9 +50,18 @@ public class NegocioController {
                              CaixaRepository caixaRepository,
                              ItemNegocioRepository itemNegocioRepository,
                              FuncionarioRepository funcionarioRepository) {
+    //Injeção de dependência da classe Repository
+    NegocioController(NegocioRepository negocioRepository, CaixaRepository caixaRepository,
+                      ProdutoRepository produtoRepository,
+                      ItemNegocioRepository itemNegocioRepository,
+                      FuncionarioRepository funcionarioRepository,
+                      TransportadoraRepository transportadoraRepository) {
         this.repository = negocioRepository;
         this.produtoRepository = produtoRepository;
         this.caixaRepository = caixaRepository;
+        this.itemNegocioRepository = itemNegocioRepository;
+        this.funcionarioRepository = funcionarioRepository;
+        this.transportadoraRepository = transportadoraRepository;
         this.itemNegocioRepository = itemNegocioRepository;
         this.funcionarioRepository = funcionarioRepository;
     }
@@ -55,6 +77,84 @@ public class NegocioController {
     }
 
     @PostMapping("/negocio")
+    Negocio addNegocio(@RequestBody NegocioRequestDTO request) {
+        Transportadora t = transportadoraRepository.findById(request.getNegocio().getTransportadora().getId())
+                .orElseThrow(() -> new RuntimeException("transportadora nao encontrada"));
+        request.getNegocio().setTransportadora(t);
+
+        // Fetch and set the participantes
+        Set<Funcionario> funcionarios = request.getNegocio().getParticipantes().stream()
+                .map(f -> funcionarioRepository.findById(f.getId())
+                        .orElseThrow(() -> new RuntimeException("Funcionario não encontrado: " + f.getId())))
+                .collect(Collectors.toSet());
+        request.getNegocio().setParticipantes(funcionarios);
+
+        /*
+        // Fetch and set the itemsNegocio
+        List<ItemNegocio> items = negocio.getItemsNegocio().stream()
+                .map(item -> itemNegocioRepository.findById(item.getId())
+                        .orElseThrow(() -> new RuntimeException("ItemNegocio não encontrado: " + item.getId())))
+                .collect(Collectors.toList());
+<<<<<<< kevin
+        */
+
+        List<ItemNegocio> items = new ArrayList<>();
+        for(int i=0; i<request.getQuantidades().size(); i++){
+            Produto p = produtoRepository.findById(request.getIdProdutos().get(i)).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado")
+            );
+            ItemNegocio item = new ItemNegocio(p, null, request.getQuantidades().get(i));
+            itemNegocioRepository.save(item);
+            items.add(item);
+        }
+        request.getNegocio().setItemsNegocio(new HashSet<>(items));
+
+        repository.save(request.getNegocio());
+
+        for(Funcionario f : funcionarios){
+            f.addNegociosParticipantes(request.getNegocio());
+            funcionarioRepository.save(f);
+        }
+
+
+        for(ItemNegocio i : items){
+            i.addNegocio(request.getNegocio());
+            itemNegocioRepository.save(i);
+
+            Produto p = produtoRepository.findById(i.getProduto().getId()).orElseThrow(
+                    () -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+            p.addItemNegocio(i);
+            produtoRepository.save(p);
+        }
+
+        request.getNegocio().getItemsNegocio().clear();
+        request.getNegocio().getItemsNegocio().addAll(items);
+        repository.save(request.getNegocio());
+//
+//        if (negocio.getTipo().equals(Tipo.COMPRA)) {
+//            //iterando por cada um dos itens negociados
+//            for (ItemNegocio item : negocio.getItemsNegocio()) {
+//                //caso o item ja exista, sera alterado a quantidade de estoque.
+//                if (produtoRepository.existsById(item.getId())) {
+//                    return repository.save(negocio);
+//                } else {
+//                    produtoRepository.save(item.getProduto());
+//                }
+//            }
+//        } else if (negocio.getTipo().equals(Tipo.VENDA)) {
+//            //iterando por cada um dos itens negociados
+//            for (ItemNegocio item : negocio.getItemsNegocio()) {
+//                //caso o item ja exista, sera alterado a quantidade de estoque.
+//                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+//                produtoNegociado.diminuirEstoque(item.getQuantidade());
+//            }
+//        }
+
+        //diminuir o estoque, caso seja venda
+        if(request.getNegocio().getTipo().equals(Tipo.VENDA))
+        for (ItemNegocio item : request.getNegocio().getItemsNegocio()) {
+                //caso o item ja exista, sera alterado a quantidade de estoque.
     @Transactional
     public Negocio addNegocio(@RequestBody Negocio negocio) {
         negocio.setStatus(Status.ABERTO);
@@ -90,6 +190,33 @@ public class NegocioController {
                 produtoRepository.save(produtoNegociado);
             }
         }
+
+        return request.getNegocio();
+    }
+
+//    @PostMapping("/negocio")
+//    Negocio addNegocio(@RequestBody Negocio negocio) {
+//        if (negocio.getTipo().equals(Tipo.COMPRA)) {
+//            //iterando por cada um dos itens negociados
+//            for (ItemNegocio item : negocio.getItemsNegocio()) {
+//                //caso o item ja exista, sera alterado a quantidade de estoque.
+//                if (produtoRepository.existsById(item.getId())) {
+//                    return repository.save(negocio);
+//                } else {
+//                    produtoRepository.save(item.getProduto());
+//                }
+//            }
+//        } else if (negocio.getTipo().equals(Tipo.VENDA)) {
+//            //iterando por cada um dos itens negociados
+//            for (ItemNegocio item : negocio.getItemsNegocio()) {
+//                //caso o item ja exista, sera alterado a quantidade de estoque.
+//                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+//                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+//                produtoNegociado.diminuirEstoque(item.getQuantidade());
+//            }
+//        }
+//        return repository.save(negocio);
+//    }
 
         return negocioSalvo;
     }

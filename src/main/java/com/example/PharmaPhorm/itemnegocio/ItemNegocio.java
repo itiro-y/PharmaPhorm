@@ -18,7 +18,7 @@ public class ItemNegocio {
     @ManyToOne
     @JoinColumn(name = "negocio_id")
     @JsonBackReference
-    private Negocio negocio;
+    private Negocio negocio=null;
 
     public ItemNegocio(Produto produto, Negocio negocio, int quantidade) {
         this.produto = produto;
@@ -58,9 +58,10 @@ public class ItemNegocio {
         return negocio;
     }
 
-    public void setNegocio(Negocio negocio) {
+    public void addNegocio(Negocio negocio) {
         this.negocio = negocio;
     }
+
 
 // Controller
 //    public void setQuantidade(int quantidade) {

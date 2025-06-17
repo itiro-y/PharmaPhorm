@@ -1,0 +1,21 @@
+{
+  "tipo": "VENDA",
+  "status": "ABERTO",
+  "transportadora": { "id": 152 },
+  "participantes": [
+    { "id": 202 },
+    { "id": 203 }
+  ]
+}
+{
+    "idProdutos": [
+    152,
+    14
+  ]
+}
+{
+    "quantidades": [
+      152,
+      77
+    ]
+}

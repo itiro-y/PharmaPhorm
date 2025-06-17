@@ -92,7 +92,7 @@ class LoadDB {
             log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora X", new ArrayList<>(List.of("Sul", "Sudeste")))));
 
             //Inicializa negocio
-            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", new HashSet<>(funcionarioRepository.findAll()), repositoryTransportadora.findAll().getFirst(), null)));
+            log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", new HashSet<>(funcionarioRepository.findAll()), repositoryTransportadora.findAll().getFirst())));
 
             // ---Inicializa itemNegocio---
             log.info("Preloading " + itemNegocioRepository.save(new ItemNegocio(produtoRepository.findAll().get(0), repositoryNegocio.findAll().getFirst(),100)));
