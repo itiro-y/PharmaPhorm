@@ -78,12 +78,32 @@ public class NegocioController {
                 .collect(Collectors.toList());
         negocio.setItemsNegocio(new HashSet<>(items));
 
+        if (negocio.getTipo().equals(Tipo.COMPRA)) {
+            //iterando por cada um dos itens negociados
+            for (ItemNegocio item : negocio.getItemsNegocio()) {
+                //caso o item ja exista, sera alterado a quantidade de estoque.
+                if (produtoRepository.existsById(item.getId())) {
+                    return repository.save(negocio);
+                } else {
+                    produtoRepository.save(item.getProduto());
+                }
+            }
+        } else if (negocio.getTipo().equals(Tipo.VENDA)) {
+            //iterando por cada um dos itens negociados
+            for (ItemNegocio item : negocio.getItemsNegocio()) {
+                //caso o item ja exista, sera alterado a quantidade de estoque.
+                Produto produtoNegociado = produtoRepository.findById(item.getProduto().getId())
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "produto nao encontrado"));
+                produtoNegociado.diminuirEstoque(item.getQuantidade());
+            }
+        }
+
         return repository.save(negocio);
     }
 
 //    @PostMapping("/negocio")
 //    Negocio addNegocio(@RequestBody Negocio negocio) {
-//        if (negocio.getTipo() == Tipo.COMPRA) {
+//        if (negocio.getTipo().equals(Tipo.COMPRA)) {
 //            //iterando por cada um dos itens negociados
 //            for (ItemNegocio item : negocio.getItemsNegocio()) {
 //                //caso o item ja exista, sera alterado a quantidade de estoque.
@@ -93,7 +113,7 @@ public class NegocioController {
 //                    produtoRepository.save(item.getProduto());
 //                }
 //            }
-//        } else if (negocio.getTipo() == Tipo.VENDA) {
+//        } else if (negocio.getTipo().equals(Tipo.VENDA)) {
 //            //iterando por cada um dos itens negociados
 //            for (ItemNegocio item : negocio.getItemsNegocio()) {
 //                //caso o item ja exista, sera alterado a quantidade de estoque.
