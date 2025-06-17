@@ -1,5 +1,6 @@
 package com.example.PharmaPhorm.transportadora;
 
+import com.example.PharmaPhorm.negocio.Negocio;
 import jakarta.persistence.*;
 import lombok.NoArgsConstructor;
 
@@ -15,10 +16,10 @@ public class Transportadora {
     @ElementCollection
     private List<String> regioes;
 
-    private boolean isAtivo;
+    private boolean isAtivo=true;
 
-//    @OneToMany(mappedBy = "transportadora")
-//    private List<Negocio> negocios;
+    @OneToMany(mappedBy = "transportadora")
+    private List<Negocio> negocios;
 
     public Transportadora() {
 
@@ -28,7 +29,7 @@ public class Transportadora {
         this.nome = nome;
         this.regioes = regioes;
         isAtivo = true;
-        //negocios = new ArrayList<>();
+        negocios = new ArrayList<>();
     }
 
     // Getters e Setters

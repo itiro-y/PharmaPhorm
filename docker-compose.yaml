@@ -5,8 +5,6 @@
 
 #Ao conectar ao banco, use o port 5433
 
-
-
 services:
   postgres:
     image: postgres
@@ -35,6 +33,7 @@ services:
 #      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/pharmaphorma
 #      SPRING_DATASOURCE_USERNAME: admin
 #      SPRING_DATASOURCE_PASSWORD: admin
+
 volumes:
   pgdata:
 

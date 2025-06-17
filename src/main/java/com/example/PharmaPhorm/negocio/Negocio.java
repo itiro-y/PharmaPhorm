@@ -5,6 +5,7 @@ import com.example.PharmaPhorm.Enum.Tipo;
 import com.example.PharmaPhorm.funcionario.Funcionario;
 import com.example.PharmaPhorm.itemnegocio.ItemNegocio;
 import com.example.PharmaPhorm.transportadora.Transportadora;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.Entity;
 import jakarta.persistence.*;
 
@@ -27,28 +28,18 @@ public class Negocio {
     @ManyToMany(mappedBy = "negociosParticipantes")
     private Set<Funcionario> participantes;
 
-    @OneToMany(mappedBy = "negocio")
-    private List<ItemNegocio> itemsNegocio = null;
+    @OneToMany(mappedBy = "negocio", orphanRemoval = true)
+    @JsonManagedReference
+    private Set<ItemNegocio> itemsNegocio = null;
 
-
-    public Negocio(String tipo, Set<Funcionario> participantes, Transportadora transportadora) {
+    // String, List<Long>, Long, List<Long>
+    public Negocio(String tipo, Set<Funcionario> participantes, Transportadora transportadora, Set<ItemNegocio> itemsNegocio) {
         this.tipo = Tipo.valueOf(tipo.toUpperCase());
         this.status = Status.ABERTO;
 
         this.participantes = participantes;
         this.transportadora = transportadora;
         this.itemsNegocio = itemsNegocio;
-//        //diminui a quantidade de cada produto em estoque quando a negociação for de venda
-//        if (tipo.equals(Tipo.VENDA)) {
-//            for (ItemNegocio itemNegocio : itemsNegocio) {
-//                itemNegocio.getProduto().setQuantidadeEstoque(itemNegocio.getProduto().getQuantidadeEstoque() - itemNegocio.getQuantidade());
-//            }
-//        }
-    }
-
-    public Negocio(Tipo tipo, Set<Funcionario> participantes) {
-        this.tipo = tipo;
-        this.participantes = participantes;
     }
 
     public Negocio() {
@@ -96,11 +87,18 @@ public class Negocio {
         this.transportadora = transportadora;
     }
 
-    public List<ItemNegocio> getItemsNegocio() {
+//     public List<ItemNegocio> getItemsNegocio() {
+//         return itemsNegocio;
+//     }
+
+//     public void setItemsNegocio(List<ItemNegocio> itemsNegocio) {
+
+    public Set<ItemNegocio> getItemsNegocio() {
         return itemsNegocio;
     }
+  
+    public void setItemsNegocio(Set<ItemNegocio> itemsNegocio) {
 
-    public void setItemsNegocio(List<ItemNegocio> itemsNegocio) {
         this.itemsNegocio = itemsNegocio;
     }
 }
