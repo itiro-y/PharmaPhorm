@@ -21,4 +21,13 @@ public class HomeController {
         return "produto";
     }
 
+    @GetMapping("/transportadoras")
+    public String transportadoras() {
+        return "transportadoras";
+    }
+
+    @GetMapping("/negocios")
+    public String negocios() {
+        return "negocios";
+    }
 }

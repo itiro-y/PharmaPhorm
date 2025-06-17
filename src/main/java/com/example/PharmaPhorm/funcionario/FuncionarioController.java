@@ -2,13 +2,10 @@ package com.example.PharmaPhorm.funcionario;
 
 import com.example.PharmaPhorm.Enum.Setor;
 import com.example.PharmaPhorm.caixa.CaixaController;
-import com.example.PharmaPhorm.caixa.CaixaRepository;
 import com.example.PharmaPhorm.funcionario.Exceptions.FuncionarioLimitExceededException;
 import com.example.PharmaPhorm.funcionario.Exceptions.FuncionarioNotFoundException;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @RestController
@@ -16,6 +13,7 @@ class FuncionarioController {
     private final FuncionarioRepository repository;
     private final CaixaController caixaController;
 
+    // ✅ Constantes de limite permanecem
     private final int LIMITE_GERENCIA = 1;
     private final int LIMITE_ATENDIMENTO = 4;
     private final int LIMITE_GESTAO = 4;
@@ -23,23 +21,12 @@ class FuncionarioController {
     private final int LIMITE_VENDAS = 5;
     private final int LIMITE_ALMOXARIFADO = 3;
 
-    private int counterGerencia;
-    private int counterAtendimento;
-    private int counterGestao;
-    private int counterFinanceiro;
-    private int counterVendas;
-    private int counterAlmoxarifado;
+    // ✅ Variáveis de contador foram REMOVIDAS
 
     FuncionarioController(FuncionarioRepository repository, CaixaController caixaController) {
         this.repository = repository;
         this.caixaController = caixaController;
-
-        counterGerencia = 1;
-        counterAtendimento = 0;
-        counterGestao = 1;
-        counterFinanceiro = 1;
-        counterVendas = 1;
-        counterAlmoxarifado = 1;
+        // ✅ Construtor limpo, sem inicialização de contadores
     }
 
     @GetMapping("/funcionario")
@@ -49,28 +36,16 @@ class FuncionarioController {
 
     @PostMapping("/funcionario")
     Funcionario addFuncionario(@RequestBody Funcionario funcionario) {
-        if(checarLimiteFuncionarios(funcionario)){
-            if(funcionario != null){
-                switch (funcionario.getSetor()){
-                    case Setor.GERENCIA -> this.counterGerencia++;
-                    case Setor.ATENDIMENTO_AO_CLIENTE -> this.counterAtendimento++;
-                    case Setor.GESTAO_DE_PESSOAS -> this.counterGestao++;
-                    case Setor.FINANCEIRO -> this.counterFinanceiro++;
-                    case Setor.VENDAS -> this.counterVendas++;
-                    case Setor.ALMOXARIFADO -> this.counterAlmoxarifado++;
-                    default -> throw new RuntimeException("Setor invalido");
-                }
-                ResponseEntity.ok("HELLO");
-                return repository.save(funcionario);
-            }
-        } else{
+        // A verificação agora usa o banco de dados como fonte da verdade
+        if (checarLimiteFuncionarios(funcionario.getSetor())) {
+            return repository.save(funcionario);
+        } else {
             throw new FuncionarioLimitExceededException(funcionario.getSetor());
         }
-        return null;
     }
 
     @GetMapping("/funcionario/{id}")
-    Funcionario getFuncionariosByID(@PathVariable Long id ) {
+    Funcionario getFuncionariosByID(@PathVariable Long id) {
         return repository.findById(id).orElseThrow(() -> new FuncionarioNotFoundException(id));
     }
 
@@ -78,6 +53,12 @@ class FuncionarioController {
     Funcionario updateFuncionario(@RequestBody Funcionario funcionario, @PathVariable Long id) {
         return repository.findById(id)
                 .map(f -> {
+                    // Lógica para checar se a mudança de setor é válida
+                    if (!f.getSetor().equals(funcionario.getSetor())) {
+                        if (!checarLimiteFuncionarios(funcionario.getSetor())) {
+                            throw new FuncionarioLimitExceededException(funcionario.getSetor());
+                        }
+                    }
                     f.setNome(funcionario.getNome());
                     f.setIdade(funcionario.getIdade());
                     f.setGenero(funcionario.getGenero());
@@ -85,56 +66,38 @@ class FuncionarioController {
                     f.setSalariobase(funcionario.getSalariobase());
                     return repository.save(f);
                 })
-                .orElseGet(() -> {
-                    return repository.save(funcionario);
-                });
+                .orElseThrow(() -> new FuncionarioNotFoundException(id));
     }
 
     @DeleteMapping("/funcionario/{id}")
     void deleteFuncionario(@PathVariable Long id) {
+        // ✅ O método delete agora não precisa se preocupar com contadores.
+        // Ele apenas deleta o funcionário do banco de dados.
+        if (!repository.existsById(id)) {
+            throw new FuncionarioNotFoundException(id);
+        }
         repository.deleteById(id);
     }
 
     @GetMapping("/funcionario/calcularParticipacaoLucro")
     public double calcularParticipacaoLucros() {
-        return caixaController.estimarLucroMensal() * 0.1 / repository.findAll().size();
+        return caixaController.estimarLucroMensal() * 0.1 / repository.count();
     }
 
-    // Metodo para checar se o limite de funcionarios está cheio
-    // Retorna falso se a lista de funcionarios estiver cheia, verdadeiro caso ainda haja vaga na lista
-    public boolean checarLimiteFuncionarios(Funcionario func) {
-        int innerCounterGerencia = this.counterGerencia;
-        int innerCounterAlmoxarifado = this.counterAlmoxarifado;
-        int innerCounterAtendimento = this.counterAtendimento;
-        int innerCounterFinanceiro = this.counterFinanceiro;
-        int innerCounterVendas = this.counterVendas;
-        int innerCounterGestao = this.counterGestao;
+    // ✅ MÉTODO DE CHECAGEM REFEITO E MAIS SEGURO
+    // Retorna true se ainda houver vaga no setor.
+    public boolean checarLimiteFuncionarios(Setor setor) {
+        // Consulta o número atual de funcionários naquele setor diretamente do banco
+        long contagemAtual = repository.countBySetor(setor);
 
-        switch (func.getSetor()) {
-            case Setor.GERENCIA -> innerCounterGerencia++;
-            case Setor.ATENDIMENTO_AO_CLIENTE -> innerCounterAtendimento++;
-            case Setor.GESTAO_DE_PESSOAS -> innerCounterGestao++;
-            case Setor.FINANCEIRO -> innerCounterFinanceiro++;
-            case Setor.VENDAS -> innerCounterVendas++;
-            case Setor.ALMOXARIFADO -> innerCounterAlmoxarifado++;
-            default -> throw new RuntimeException("Setor invalido");
-        }
-
-        // Checando se cada Setor está cheio
-        if (innerCounterGerencia > LIMITE_GERENCIA) {
-            return false;
-        } else if (innerCounterAtendimento > LIMITE_ATENDIMENTO) {
-            return false;
-        } else if (innerCounterGestao > LIMITE_GESTAO) {
-            return false;
-        } else if (innerCounterFinanceiro > LIMITE_FINANCEIRO) {
-            return false;
-        } else if (innerCounterVendas > LIMITE_VENDAS) {
-            return false;
-        } else if (innerCounterAlmoxarifado > LIMITE_ALMOXARIFADO) {
-            return false;
-        } else {
-            return true;
-        }
+        return switch (setor) {
+            case GERENCIA -> contagemAtual < LIMITE_GERENCIA;
+            case ATENDIMENTO_AO_CLIENTE -> contagemAtual < LIMITE_ATENDIMENTO;
+            case GESTAO_DE_PESSOAS -> contagemAtual < LIMITE_GESTAO;
+            case FINANCEIRO -> contagemAtual < LIMITE_FINANCEIRO;
+            case VENDAS -> contagemAtual < LIMITE_VENDAS;
+            case ALMOXARIFADO -> contagemAtual < LIMITE_ALMOXARIFADO;
+            default -> throw new RuntimeException("Setor inválido");
+        };
     }
 }

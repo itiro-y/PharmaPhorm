@@ -1,49 +1,35 @@
 package com.example.PharmaPhorm.negocio;
 
-import java.util.ArrayList;
+import com.example.PharmaPhorm.Enum.Tipo;
+
 import java.util.List;
 
+// Esta classe representa os dados que o frontend envia para criar/editar um Negócio.
 public class NegocioRequestDTO {
-    private Negocio negocio;
-    private List<Long> idProdutos;
-    private List<Integer> quantidades;
+    private Tipo tipo;
+    private Long transportadoraId;
+    private List<Long> participanteIds;
+    private List<ItemDTO> items;
 
-    // Getters e setters
+    // Getters e Setters
+    public Tipo getTipo() { return tipo; }
+    public void setTipo(Tipo tipo) { this.tipo = tipo; }
+    public Long getTransportadoraId() { return transportadoraId; }
+    public void setTransportadoraId(Long transportadoraId) { this.transportadoraId = transportadoraId; }
+    public List<Long> getParticipanteIds() { return participanteIds; }
+    public void setParticipanteIds(List<Long> participanteIds) { this.participanteIds = participanteIds; }
+    public List<ItemDTO> getItems() { return items; }
+    public void setItems(List<ItemDTO> items) { this.items = items; }
 
-    public NegocioRequestDTO(){
-        this.negocio = new Negocio();
-        this.idProdutos = new ArrayList<Long>();
-        this.quantidades = new ArrayList<>();
-    }
+    // Classe interna para representar cada item
+    public static class ItemDTO {
+        private Long produtoId;
+        private int quantidade;
 
-    public NegocioRequestDTO(Negocio negocio, List<Integer> quantidades, List<Long> idProdutos) {
-        this.negocio = negocio;
-        this.quantidades = quantidades;
-        this.idProdutos = idProdutos;
-    }
-
-    public List<Long> getIdProdutos() {
-        return idProdutos;
-    }
-
-    public void setIdProdutos(List<Long> idProdutos) {
-        this.idProdutos = idProdutos;
-    }
-
-    public List<Integer> getQuantidades() {
-        return quantidades;
-    }
-
-    public void setQuantidades(List<Integer> quantidades) {
-        this.quantidades = quantidades;
-    }
-
-    public Negocio getNegocio() {
-        return negocio;
-    }
-
-    public void setNegocio(Negocio negocio) {
-        this.negocio = negocio;
+        // Getters e Setters
+        public Long getProdutoId() { return produtoId; }
+        public void setProdutoId(Long produtoId) { this.produtoId = produtoId; }
+        public int getQuantidade() { return quantidade; }
+        public void setQuantidade(int quantidade) { this.quantidade = quantidade; }
     }
 }
-

@@ -1,13 +1,13 @@
 package com.example.PharmaPhorm.funcionario;
 import com.example.PharmaPhorm.Enum.Genero;
 import com.example.PharmaPhorm.Enum.Setor;
-//import com.example.PharmaPhorm.negocio.Negocio;
 import com.example.PharmaPhorm.negocio.Negocio;
+import com.example.PharmaPhorm.negocio.Negocio;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-
-import java.util.*;
+import java.util.HashSet;
+import java.util.Objects;
+import java.util.Set;
 
 @Entity
 public class Funcionario {
@@ -32,10 +32,11 @@ public class Funcionario {
             joinColumns = @JoinColumn(name = "funcionario_id"),
             inverseJoinColumns = @JoinColumn(name = "negocio_id")
     )
+    @JsonIgnore // Importante para evitar loop infinito na serialização JSON
     private Set<Negocio> negociosParticipantes=null;
 
     public Funcionario() {
-
+        this.negociosParticipantes = new HashSet<>();
     }
 
 
@@ -48,6 +49,11 @@ public class Funcionario {
         this.negociosParticipantes = new HashSet<>();
         this.salarioLiquido = this.salariobase - calcularValorIR();
         ajustarBeneficiosPorSetor();
+    }
+
+    // ✅ MÉTODO GETTER ADICIONADO AQUI
+    public Set<Negocio> getNegociosParticipantes() {
+        return negociosParticipantes;
     }
 
     public void setNegociosParticipantes(Set<Negocio> negociosParticipantes) {
@@ -186,13 +192,14 @@ public class Funcionario {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Funcionario that = (Funcionario) o;
-        return idade == that.idade && Double.compare(salariobase, that.salariobase) == 0 && Double.compare(VA, that.VA) == 0 && Double.compare(VR, that.VR) == 0 && Double.compare(VT, that.VT) == 0 && Double.compare(PLANO_SAUDE, that.PLANO_SAUDE) == 0 && Double.compare(PLANO_ODONTO, that.PLANO_ODONTO) == 0 && Objects.equals(id, that.id) && Objects.equals(nome, that.nome) && genero == that.genero && setor == that.setor;
+        return Objects.equals(id, that.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, nome, idade, genero, setor, salariobase, VA, VR, VT, PLANO_SAUDE, PLANO_ODONTO);
+        return Objects.hash(id);
     }
+
 
     @Override
     public String toString() {
@@ -210,4 +217,13 @@ public class Funcionario {
                 ", PLANO_ODONTO=" + PLANO_ODONTO +
                 '}';
     }
+
+    public String toStringResumido() {
+        return "Funcionario{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                '}';
+    }
+    
+
 }

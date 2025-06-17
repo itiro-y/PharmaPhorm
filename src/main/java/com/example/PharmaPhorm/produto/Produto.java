@@ -1,22 +1,9 @@
 package com.example.PharmaPhorm.produto;
 
 import com.example.PharmaPhorm.itemnegocio.ItemNegocio;
-
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.persistence.*;
 import java.util.Set;
-
 
 @Entity
 public class Produto {
@@ -28,15 +15,14 @@ public class Produto {
     private Double valorVenda;
     private Integer quantidadeEstoque;
 
+    // ✅ CORREÇÃO APLICADA AQUI
+    // Adicionamos a relação com ItemNegocio e a configuração de cascata.
+    @OneToMany(mappedBy = "produto", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @JsonIgnore // Evita loops infinitos ao converter para JSON
+    private Set<ItemNegocio> itemsNegocio;
 
-    @OneToMany(mappedBy = "produto")
-    private Set<ItemNegocio> itemsNegocio = new HashSet<>();
 
     public Produto() {
-        this.nome = "";
-        this.valorCompra = 0.0;
-        this.valorVenda = 0.0;
-        this.quantidadeEstoque = 0;
     }
 
     public Produto(String nome, Double valorCompra, Double valorVenda, Integer quantidadeEstoque) {
@@ -46,10 +32,7 @@ public class Produto {
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
-    public void addItemNegocio(ItemNegocio itemNegocio) {
-        this.itemsNegocio.add(itemNegocio);
-    }
-
+    // Getters e Setters
     public Long getId() {
         return id;
     }
@@ -90,14 +73,25 @@ public class Produto {
         this.quantidadeEstoque = quantidadeEstoque;
     }
 
+    public Set<ItemNegocio> getItemsNegocio() {
+        return itemsNegocio;
+    }
+
+    public void setItemsNegocio(Set<ItemNegocio> itemsNegocio) {
+        this.itemsNegocio = itemsNegocio;
+    }
+
+
+    // Métodos de Lógica
     public Integer adicionarEstoque(Integer estoqueAdicional) {
-        quantidadeEstoque += estoqueAdicional;
-        return quantidadeEstoque;
+        this.quantidadeEstoque += estoqueAdicional;
+        return this.quantidadeEstoque;
     }
 
     public Integer diminuirEstoque(Integer estoque) {
-        quantidadeEstoque -= estoque;
-        return quantidadeEstoque;
+        if (this.quantidadeEstoque >= estoque) {
+            this.quantidadeEstoque -= estoque;
+        }
+        return this.quantidadeEstoque;
     }
-
 }

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Negócios - PharmaPhorm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilo para suavizar a transição dos modais */
+        .modal {
+            transition: opacity 0.3s ease;
+        }
+        .modal-content {
+            transition: transform 0.3s ease;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 lg:p-8">
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-4">
+            <a href="/" title="Voltar para a página principal" class="text-gray-500 hover:text-indigo-600 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8a5 5 0 015 5v1" />
+                </svg>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Gestão de Negócios</h1>
+        </div>
+        <button onclick="abrirFormularioCriar()" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition duration-300">
+            + Novo Negócio
+        </button>
+    </div>
+
+    <div class="bg-white shadow-md rounded-lg overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+            <thead class="bg-gray-50">
+            <tr>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tipo</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Participantes</th>
+                <th class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">Ações</th>
+            </tr>
+            </thead>
+            <tbody id="negocios-body" class="bg-white divide-y divide-gray-200">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div id="detalhes-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60" onclick="fecharModalDetalhes(event)">
+    <div class="modal-content bg-white rounded-lg p-6 w-11/12 max-w-2xl max-h-[90vh] overflow-y-auto shadow-xl transform scale-95">
+        <div class="flex justify-between items-start">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">Detalhes do Negócio</h2>
+            <button onclick="fecharModalDetalhes(null, true)" class="text-gray-500 hover:text-gray-800">&times;</button>
+        </div>
+        <div id="detalhes-content" class="space-y-3"></div>
+        <button onclick="fecharModalDetalhes(null, true)" class="mt-6 w-full px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-300">Fechar</button>
+    </div>
+</div>
+
+<div id="form-modal" class="modal fixed inset-0 z-50 hidden items-center justify-center bg-black bg-opacity-60" onclick="fecharModalForm(event)">
+    <div class="modal-content bg-white rounded-lg p-6 w-11/12 max-w-3xl max-h-[90vh] overflow-y-auto shadow-xl transform scale-95">
+        <h2 id="form-title" class="text-2xl font-bold text-gray-800 mb-6">Novo Negócio</h2>
+        <form id="negocio-form" onsubmit="salvarNegocio(event)" class="space-y-4">
+            <input type="hidden" id="negocio-id">
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label for="tipo" class="block text-sm font-medium text-gray-700">Tipo</label>
+                    <select id="tipo" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500">
+                        <option value="VENDA">Venda</option>
+                        <option value="COMPRA">Compra</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="transportadora" class="block text-sm font-medium text-gray-700">Transportadora</label>
+                    <select id="transportadora" required class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"></select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700">Funcionários Participantes</label>
+                <div id="participantes-checkboxes" class="mt-2 grid grid-cols-2 md:grid-cols-3 gap-2 border p-3 rounded-md max-h-40 overflow-y-auto">
+                </div>
+            </div>
+
+            <div>
+                <h3 class="text-lg font-medium text-gray-800 mb-2">Itens do Negócio</h3>
+                <div class="flex items-center gap-4 mb-3">
+                    <select id="produto-select" class="block w-full p-2 border border-gray-300 rounded-md shadow-sm"></select>
+                    <input type="number" id="quantidade-input" placeholder="Qtd." min="1" class="w-24 p-2 border border-gray-300 rounded-md">
+                    <button type="button" onclick="adicionarItem()" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-3 rounded-lg transition duration-300">Adicionar</button>
+                </div>
+                <div id="itens-negocio-list" class="space-y-2">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-4">
+                <button type="button" onclick="fecharModalForm(null, true)" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded-lg transition">Cancelar</button>
+                <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded-lg transition">Salvar</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+
+<script>
+    // IMPORTANTE: Altere esta URL se sua API estiver rodando em uma porta diferente
+    const API_URL = 'http://localhost:8081';
+
+    // =================================================================
+    // FUNÇÕES PRINCIPAIS DA TABELA
+    // =================================================================
+
+    async function carregarNegocios() {
+        try {
+            const res = await fetch(`${API_URL}/negocio`);
+            if (!res.ok) throw new Error('Falha ao carregar negócios');
+            const negocios = await res.json();
+
+            const corpo = document.getElementById('negocios-body');
+            corpo.innerHTML = '';
+
+            if (negocios.length === 0) {
+                corpo.innerHTML = '<tr><td colspan="5" class="text-center py-10 text-gray-500">Nenhum negócio encontrado.</td></tr>';
+                return;
+            }
+
+            for (const negocio of negocios) {
+                const participantesNomes = negocio.participantes && negocio.participantes.length > 0
+                    ? negocio.participantes.map(p => p.nome).join(', ')
+                    : 'Nenhum';
+
+                const statusClass = negocio.status === 'CONCLUIDO' ? 'bg-green-100 text-green-800' :
+                    negocio.status === 'CANCELADO' ? 'bg-red-100 text-red-800' :
+                        'bg-yellow-100 text-yellow-800';
+
+                corpo.innerHTML += `
+              <tr class="hover:bg-gray-50 transition duration-150">
+                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">${negocio.id}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${negocio.tipo}</td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${statusClass}">
+                    ${negocio.status}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">${participantesNomes}</td>
+                <td class="px-6 py-4 whitespace-nowrap text-center text-sm font-medium space-x-2">
+                  <button class="text-indigo-600 hover:text-indigo-900" title="Ver Detalhes" onclick="verDetalhes(${negocio.id})">Ver</button>
+                  <button class="text-gray-600 hover:text-gray-900" title="Editar" onclick="abrirFormularioEditar(${negocio.id})">Editar</button>
+                  ${negocio.status === 'ABERTO' ? `
+                    <button class="text-green-600 hover:text-green-900" title="Concluir" onclick="concluirNegocio(${negocio.id})">Concluir</button>
+                    <button class="text-yellow-600 hover:text-yellow-900" title="Cancelar" onclick="cancelarNegocio(${negocio.id})">Cancelar</button>
+                  ` : ''}
+                  <button class="text-red-600 hover:text-red-900" title="Excluir" onclick="excluirNegocio(${negocio.id})">Excluir</button>
+                </td>
+              </tr>`;
+            }
+        } catch (error) {
+            console.error("Erro:", error);
+            document.getElementById('negocios-body').innerHTML = `<tr><td colspan="5" class="text-center py-10 text-red-500">Erro ao carregar dados. Verifique o console.</td></tr>`;
+        }
+    }
+
+    async function concluirNegocio(id) {
+        if (!confirm('Deseja realmente concluir este negócio? Esta ação não pode ser desfeita.')) return;
+        try {
+            await fetch(`${API_URL}/negocio/concluir/${id}`, { method: 'PUT' });
+            carregarNegocios();
+        } catch (error) {
+            console.error('Erro ao concluir negócio:', error);
+            alert('Não foi possível concluir o negócio. Verifique se o caixa possui saldo suficiente.');
+        }
+    }
+
+    async function cancelarNegocio(id) {
+        if (!confirm('Deseja cancelar este negócio? Os itens de venda serão retornados ao estoque.')) return;
+        await fetch(`${API_URL}/negocio/cancelar/${id}`, { method: 'PUT' });
+        carregarNegocios();
+    }
+
+    async function excluirNegocio(id) {
+        if (confirm('Tem certeza que deseja EXCLUIR este negócio? Esta ação é permanente.')) {
+            await fetch(`${API_URL}/negocio/${id}`, { method: 'DELETE' });
+            carregarNegocios();
+        }
+    }
+
+    // =================================================================
+    // FUNÇÕES DO MODAL DE DETALHES
+    // =================================================================
+
+    async function verDetalhes(id) {
+        const res = await fetch(`${API_URL}/negocio/${id}`);
+        const negocio = await res.json();
+
+        const transportadoraNome = negocio.transportadora?.nome || 'Não especificada';
+        const participantesNomes = negocio.participantes?.map(p => p.nome).join(', ') || 'Nenhum';
+        let itensHtml = '<p class="text-gray-600">Nenhum item neste negócio.</p>';
+
+        if (negocio.itemsNegocio && negocio.itemsNegocio.length > 0) {
+            itensHtml = `
+            <ul class="list-disc list-inside space-y-1 text-gray-700">
+              ${negocio.itemsNegocio.map(item => `
+                <li>${item.produto.nome} - <strong>Quantidade:</strong> ${item.quantidade}</li>
+              `).join('')}
+            </ul>`;
+        }
+
+        let html = `
+        <p><strong>ID:</strong> ${negocio.id}</p>
+        <p><strong>Tipo:</strong> ${negocio.tipo}</p>
+        <p><strong>Status:</strong> ${negocio.status}</p>
+        <p><strong>Transportadora:</strong> ${transportadoraNome}</p>
+        <p><strong>Participantes:</strong> ${participantesNomes}</p>
+        <h3 class="font-semibold text-lg mt-4 mb-2">Itens do Negócio:</h3>
+        ${itensHtml}`;
+
+        document.getElementById('detalhes-content').innerHTML = html;
+        document.getElementById('detalhes-modal').classList.remove('hidden');
+        document.getElementById('detalhes-modal').classList.add('flex');
+        setTimeout(() => document.querySelector('#detalhes-modal .modal-content').classList.remove('scale-95'), 10);
+    }
+
+    function fecharModalDetalhes(event, forceClose = false) {
+        if (forceClose || (event && event.target.id === 'detalhes-modal')) {
+            const modal = document.getElementById('detalhes-modal');
+            document.querySelector('#detalhes-modal .modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+    }
+
+    // =================================================================
+    // FUNÇÕES DO MODAL DE FORMULÁRIO (CRIAR/EDITAR)
+    // =================================================================
+
+    let itensNoFormulario = []; // Armazena os itens { produto: {id, nome}, quantidade }
+
+    async function carregarOpcoesFormulario() {
+        // Carregar funcionários, produtos e transportadoras em paralelo
+        const [funcRes, prodRes, transRes] = await Promise.all([
+            fetch(`${API_URL}/funcionario`),
+            fetch(`${API_URL}/produtos`),
+            fetch(`${API_URL}/transportadora`)
+        ]);
+
+        const funcionarios = await funcRes.json();
+        const produtos = await prodRes.json();
+        const transportadoras = await transRes.json();
+
+        const funcContainer = document.getElementById('participantes-checkboxes');
+        funcContainer.innerHTML = funcionarios.map(f => `
+            <label class="flex items-center space-x-2">
+                <input type="checkbox" name="participantes" value="${f.id}" class="rounded">
+                <span>${f.nome}</span>
+            </label>
+        `).join('');
+
+        const prodSelect = document.getElementById('produto-select');
+        prodSelect.innerHTML = produtos.map(p => `<option value="${p.id}" data-nome="${p.nome}">${p.nome}</option>`).join('');
+
+        const transSelect = document.getElementById('transportadora');
+        transSelect.innerHTML = transportadoras.map(t => `<option value="${t.id}">${t.nome}</option>`).join('');
+    }
+
+    function adicionarItem() {
+        const produtoSelect = document.getElementById('produto-select');
+        const quantidadeInput = document.getElementById('quantidade-input');
+        const produtoId = produtoSelect.value;
+        const produtoNome = produtoSelect.options[produtoSelect.selectedIndex].getAttribute('data-nome');
+        const quantidade = parseInt(quantidadeInput.value);
+
+        if (!produtoId || !quantidade || quantidade < 1) {
+            alert("Selecione um produto e uma quantidade válida.");
+            return;
+        }
+
+        // Evita adicionar o mesmo produto duas vezes
+        if (itensNoFormulario.some(item => item.produto.id == produtoId)) {
+            alert("Este produto já foi adicionado. Remova-o para alterar a quantidade.");
+            return;
+        }
+
+        itensNoFormulario.push({ produto: { id: produtoId, nome: produtoNome }, quantidade });
+        renderizarItensFormulario();
+        quantidadeInput.value = '';
+    }
+
+    function removerItem(produtoId) {
+        itensNoFormulario = itensNoFormulario.filter(item => item.produto.id != produtoId);
+        renderizarItensFormulario();
+    }
+
+    function renderizarItensFormulario() {
+        const container = document.getElementById('itens-negocio-list');
+        container.innerHTML = itensNoFormulario.map(item => `
+            <div class="flex justify-between items-center p-2 bg-gray-100 rounded">
+                <span>${item.produto.nome} (Qtd: ${item.quantidade})</span>
+                <button type="button" onclick="removerItem(${item.produto.id})" class="text-red-500 hover:text-red-700">&times;</button>
+            </div>
+        `).join('');
+    }
+
+    function abrirFormularioCriar() {
+        document.getElementById('negocio-form').reset();
+        document.getElementById('negocio-id').value = '';
+        document.getElementById('form-title').innerText = 'Novo Negócio';
+        itensNoFormulario = [];
+        renderizarItensFormulario();
+        carregarOpcoesFormulario().then(() => {
+            const modal = document.getElementById('form-modal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            setTimeout(() => document.querySelector('#form-modal .modal-content').classList.remove('scale-95'), 10);
+        });
+    }
+
+    async function abrirFormularioEditar(id) {
+        await carregarOpcoesFormulario();
+        const res = await fetch(`${API_URL}/negocio/${id}`);
+        const negocio = await res.json();
+
+        document.getElementById('negocio-form').reset();
+        document.getElementById('negocio-id').value = negocio.id;
+        document.getElementById('form-title').innerText = 'Editar Negócio';
+        document.getElementById('tipo').value = negocio.tipo;
+        if(negocio.transportadora) document.getElementById('transportadora').value = negocio.transportadora.id;
+
+        document.querySelectorAll('input[name="participantes"]').forEach(cb => {
+            cb.checked = negocio.participantes.some(p => p.id == cb.value);
+        });
+
+        itensNoFormulario = negocio.itemsNegocio.map(item => ({
+            produto: { id: item.produto.id, nome: item.produto.nome },
+            quantidade: item.quantidade
+        }));
+        renderizarItensFormulario();
+
+        const modal = document.getElementById('form-modal');
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        setTimeout(() => document.querySelector('#form-modal .modal-content').classList.remove('scale-95'), 10);
+    }
+
+    function fecharModalForm(event, forceClose = false) {
+        if (forceClose || (event && event.target.id === 'form-modal')) {
+            const modal = document.getElementById('form-modal');
+            document.querySelector('#form-modal .modal-content').classList.add('scale-95');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }, 300);
+        }
+    }
+
+    // Dentro do arquivo negocios.html, substitua a função salvarNegocio
+
+    async function salvarNegocio(event) {
+        event.preventDefault();
+
+        const id = document.getElementById('negocio-id').value;
+
+        // Captura os dados do formulário no novo formato DTO
+        const negocioData = {
+            tipo: document.getElementById('tipo').value,
+            transportadoraId: document.getElementById('transportadora').value,
+            participanteIds: Array.from(document.querySelectorAll('input[name="participantes"]:checked')).map(cb => parseInt(cb.value)),
+            items: itensNoFormulario.map(item => ({
+                produtoId: parseInt(item.produto.id),
+                quantidade: item.quantidade
+            }))
+        };
+
+        if (negocioData.items.length === 0) {
+            alert("Adicione pelo menos um item ao negócio.");
+            return;
+        }
+
+        const method = id ? 'PUT' : 'POST';
+        const url = id ? `${API_URL}/negocio/${id}` : `${API_URL}/negocio`;
+
+        try {
+            const response = await fetch(url, {
+                method: method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(negocioData)
+            });
+
+            if (!response.ok) {
+                // Tenta ler a mensagem de erro do backend
+                const errorData = await response.json();
+                throw new Error(errorData.message || 'Erro ao salvar negócio');
+            }
+
+            fecharModalForm(null, true);
+            carregarNegocios();
+
+        } catch (error) {
+            console.error("Falha ao salvar:", error);
+            alert("Erro: " + error.message);
+        }
+    }
+
+
+    // Carregamento inicial
+    document.addEventListener('DOMContentLoaded', carregarNegocios);
+</script>
+</body>
+</html>
