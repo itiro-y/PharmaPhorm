@@ -1,21 +1,19 @@
 {
-  "tipo": "VENDA",
-  "status": "ABERTO",
-  "transportadora": { "id": 152 },
-  "participantes": [
-    { "id": 202 },
-    { "id": 203 }
-  ]
-}
-{
+    "negocio": {
+        "tipo": "VENDA",
+        "status": "ABERTO",
+        "transportadora": { "id": 702 },
+        "participantes": [
+            { "id": 752 },
+            { "id": 753 }
+        ]
+    },
     "idProdutos": [
-    152,
-    14
-  ]
-}
-{
+    752,
+    753
+  ],
     "quantidades": [
-      152,
-      77
+      30,
+      20
     ]
 }
