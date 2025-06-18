@@ -1,7 +1,7 @@
 <h1 align="center">💊 PharmaPhorm</h1>
 
 <p align="center">
-  <img src="https://readme-typing-svg.herokuapp.com/?lines=Sistema+de+Gestão+Farmacêutica;Controle+de+Estoque,+Vendas+e+Clientes&center=true&width=500&height=45">
+  <img src="https://readme-typing-svg.herokuapp.com/?lines=Sistema+de+Gestão+Farmacêutica;Controle+de+Estoque,+Vendas+e+Funcionarios&center=true&width=500&height=45">
 </p>
 
 <p align="center">
