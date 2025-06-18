@@ -100,16 +100,64 @@ class LoadDB {
 
             // ---Inicializa Produto---
             log.info("preloading "+ produtoRepository.save(new Produto(
-                    "produto1",
-                    100.00,
-                    200.00,
+                    "Dipirona ",
+                    1.20,
+                    3.90,
+                    100
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Omeprazol",
+                    3.80,
+                    11.90,
+                    50
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Amoxicilina  ",
+                    2.50,
+                    9.50,
+                    60
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Rivotril (Clonazepam)",
+                    4.30,
+                    14.00,
+                    30
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Neosaldina ",
+                    5.00,
+                    17.90,
                     10
             )));
             log.info("preloading "+ produtoRepository.save(new Produto(
-                    "produto super",
-                    100.00,
-                    200.00,
-                    10
+                    "Fluoxetina ",
+                    2.20,
+                    8.50,
+                    25
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Buscopan ",
+                    1.80,
+                    6.90,
+                    100
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Produto Super",
+                    5.00,
+                    10.00,
+                    90
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Fluoxetina",
+                    1.80,
+                    6.90,
+                    75
+            )));
+            log.info("preloading "+ produtoRepository.save(new Produto(
+                    "Losartana",
+                    2.90,
+                    10.50,
+                    80
             )));
 
 
