@@ -31,19 +31,8 @@ O **PharmaPhorm** é um sistema completo de gestão farmacêutica desenvolvido c
 
 ---
 
-## 📸 Demonstração (Mockup)
-
-<p align="center">
-  <img src="https://media.giphy.com/media/U3qYN8S0j3bpK/giphy.gif" width="450" alt="Preview">
-</p>
-
-> Em breve: GIFs da interface real do sistema com telas de login, dashboard, e controle de estoque.
-
----
-
 ## 📦 Estrutura do Projeto
 
-```bash
 PharmaPhorm/
 ├── src/
 │   ├── main/
@@ -58,10 +47,11 @@ PharmaPhorm/
 ├── docker-compose.yml
 ├── pom.xml
 └── README.md
+
+---
+
 🐳 Como Rodar com Docker
-bash
-Copy
-Edit
+
 # 1. Clone o repositório
 git clone git@github.com:matheuskya/PharmaPhorm.git
 
@@ -73,23 +63,28 @@ docker-compose up -d
 
 # 4. Rode o projeto
 ./mvnw spring-boot:run
+
+---
+
 🧪 Funcionalidades Principais
- Cadastro de clientes
 
- Controle de estoque de medicamentos
+- Cadastro de clientes
+- Controle de estoque de medicamentos
+- Registro de vendas
+- Dashboard com métricas
+- Controle de usuários e permissões
 
- Registro de vendas
-
- Dashboard com métricas
-
- Controle de usuários e permissões
+---
 
 💡 Contribuindo
+
 Sinta-se à vontade para abrir uma issue, enviar um pull request ou sugerir melhorias!
 
-📫 Contato
-Desenvolvido por Matheus Kenzo
-📧 matheus@email.com
-🔗 linkedin.com/in/seu-perfil
+📫 Participantes
 
-<p align="center"> <img src="https://forthebadge.com/images/badges/made-with-java.svg"> <img src="https://forthebadge.com/images/badges/powered-by-coffee.svg"> </p> ```
+Desenvolvido por Matheus Kenzo, João Vitor Ferrari, Guilherme Pinheiro Moura, Ayrton Itiro e Kevin Luiz
+
+<p align="center">
+  <img src="https://forthebadge.com/images/badges/made-with-java.svg">
+  <img src="https://forthebadge.com/images/badges/powered-by-coffee.svg">
+</p>
