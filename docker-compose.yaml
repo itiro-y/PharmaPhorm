@@ -2,6 +2,7 @@
 #docker-compose up -d
 #docker ps
 #docker start {id}
+#docker compose build --no-cache 
 
 #Ao conectar ao banco, use o port 5433
 
