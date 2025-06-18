@@ -68,9 +68,34 @@ class LoadDB {
 
             log.info("Preloading " + funcionarioRepository.save(new Funcionario("Felipe Lopes",
                     22,
-                    "NAO_INFORMADO",
-                    "ALMOXARIFADO",
+                    "MASCULINO",
+                    "VENDAS",
                     2700.0)));
+            log.info("Preloading " + funcionarioRepository.save(new Funcionario("Gabriel Silva",
+                    32,
+                    "NAO_INFORMADO",
+                    "FINANCEIRO",
+                    3000.0)));
+            log.info("Preloading " + funcionarioRepository.save(new Funcionario("Pedro Nunes",
+                    29,
+                    "MASCULINO",
+                    "GESTAO_DE_PESSOAS",
+                    2700.0)));
+            log.info("Preloading " + funcionarioRepository.save(new Funcionario("Isadora Batista",
+                    21,
+                    "FEMININO",
+                    "ATENDIMENTO_AO_CLIENTE",
+                    1900.0)));
+            log.info("Preloading " + funcionarioRepository.save(new Funcionario("Katia Yamashida",
+                    23,
+                    "FEMININO",
+                    "ATENDIMENTO_AO_CLIENTE",
+                    2000.0)));
+            log.info("Preloading " + funcionarioRepository.save(new Funcionario("Thiago Junior",
+                    23,
+                    "MASCULINO",
+                    "ATENDIMENTO_AO_CLIENTE",
+                    2000.0)));
 
 
             // ---Inicializa Produto---
