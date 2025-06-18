@@ -15,7 +15,7 @@ public class LoadCaixaDB {
     CommandLineRunner initDatabaseCaixa(CaixaRepository caixaRepository) {
         caixaRepository.deleteAll();
         return args -> {
-            log.info("Preloading " + caixaRepository.save(new Caixa(100000)));
+            log.info("Preloading " + caixaRepository.save(new Caixa(200000)));
         };
     }
 }

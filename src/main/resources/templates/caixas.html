@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caixa e Finanças - PharmaPhorm</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Estilos para um efeito sutil de pulsação no carregamento */
+        @keyframes pulse-bg {
+            0%, 100% { background-color: #f3f4f6; } /* bg-gray-100 */
+            50% { background-color: #e5e7eb; } /* bg-gray-200 */
+        }
+        .placeholder-pulse {
+            animation: pulse-bg 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 p-4 sm:p-6 lg:p-8">
+
+<div class="max-w-7xl mx-auto">
+    <div class="flex justify-between items-center mb-6">
+        <div class="flex items-center gap-4">
+            <a href="/" title="Voltar para a página principal" class="text-gray-500 hover:text-indigo-600 transition duration-300">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 15l-3-3m0 0l3-3m-3 3h8a5 5 0 015 5v1" />
+                </svg>
+            </a>
+            <h1 class="text-3xl font-bold text-gray-800">Gestão de Caixa e Finanças</h1>
+        </div>
+    </div>
+
+    <div class="bg-white p-6 md:p-8 rounded-lg shadow-md mb-8 text-center">
+        <h2 class="text-xl font-semibold text-gray-500 uppercase tracking-wider">Saldo Atual em Caixa</h2>
+        <div id="caixa-valor" class="my-4">
+            <div class="h-12 w-64 mx-auto rounded-md placeholder-pulse"></div>
+        </div>
+        <p class="text-sm text-gray-400">Este é o valor monetário total disponível no caixa.</p>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+            <h3 class="text-lg font-semibold text-gray-500 uppercase tracking-wider">Lucro Mensal Estimado</h3>
+            <div id="lucro-mensal" class="my-3">
+                <div class="h-10 w-48 mx-auto rounded-md placeholder-pulse"></div>
+            </div>
+            <p class="text-sm text-gray-400">Baseado no estoque atual.</p>
+        </div>
+
+        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+            <h3 class="text-lg font-semibold text-gray-500 uppercase tracking-wider">Lucro Anual Estimado</h3>
+            <div id="lucro-anual" class="my-3">
+                <div class="h-10 w-48 mx-auto rounded-md placeholder-pulse"></div>
+            </div>
+            <p class="text-sm text-gray-400">Estimativa mensal × 12.</p>
+        </div>
+    </div>
+</div>
+
+
+<script>
+    const API_URL = "http://localhost:8081"; // URL base da sua API
+
+    // Função para formatar números como moeda brasileira (R$)
+    function formatarMoeda(valor) {
+        if (typeof valor !== 'number') {
+            return 'N/A';
+        }
+        return new Intl.NumberFormat('pt-BR', {
+            style: 'currency',
+            currency: 'BRL'
+        }).format(valor);
+    }
+
+    // Função principal para carregar todos os dados da página
+    async function carregarDadosCaixa() {
+        const valorCaixaEl = document.getElementById('caixa-valor');
+        const lucroMensalEl = document.getElementById('lucro-mensal');
+        const lucroAnualEl = document.getElementById('lucro-anual');
+
+        try {
+            // Executa todas as buscas de dados em paralelo para mais performance
+            const [caixaRes, lucroMensalRes, lucroAnualRes] = await Promise.all([
+                fetch(`${API_URL}/caixa`),
+                fetch(`${API_URL}/caixa/estimarLucroMensal`),
+                fetch(`${API_URL}/caixa/estimarLucroAnual`)
+            ]);
+
+            // Verifica se todas as respostas da API foram bem-sucedidas
+            if (!caixaRes.ok || !lucroMensalRes.ok || !lucroAnualRes.ok) {
+                throw new Error('Falha ao buscar dados financeiros da API.');
+            }
+
+            // Extrai os dados JSON das respostas
+            const caixaArray = await caixaRes.json();
+            const lucroMensal = await lucroMensalRes.json();
+            const lucroAnual = await lucroAnualRes.json();
+
+            // Pega o primeiro (e único) objeto Caixa da lista
+            const caixa = caixaArray.length > 0 ? caixaArray[0] : null;
+
+            // Atualiza os elementos HTML com os dados formatados
+            if (caixa) {
+                valorCaixaEl.innerHTML = `<p class="text-5xl font-bold text-gray-800">${formatarMoeda(caixa.valor)}</p>`;
+            } else {
+                valorCaixaEl.innerHTML = `<p class="text-2xl font-semibold text-red-500">Caixa não inicializado</p>`;
+            }
+
+            lucroMensalEl.innerHTML = `<p class="text-3xl font-semibold text-green-600">${formatarMoeda(lucroMensal)}</p>`;
+            lucroAnualEl.innerHTML = `<p class="text-3xl font-semibold text-blue-600">${formatarMoeda(lucroAnual)}</p>`;
+
+        } catch (error) {
+            console.error("Erro ao carregar dados do caixa:", error);
+            // Mostra uma mensagem de erro amigável na tela
+            valorCaixaEl.innerHTML = `<p class="text-xl font-semibold text-red-500">Erro ao carregar</p>`;
+            lucroMensalEl.innerHTML = `<p class="text-xl font-semibold text-red-500">Erro</p>`;
+            lucroAnualEl.innerHTML = `<p class="text-xl font-semibold text-red-500">Erro</p>`;
+        }
+    }
+
+    // Chama a função principal quando a página terminar de carregar
+    document.addEventListener('DOMContentLoaded', carregarDadosCaixa);
+</script>
+
+</body>
+</html>

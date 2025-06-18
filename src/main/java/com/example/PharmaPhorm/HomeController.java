@@ -30,4 +30,7 @@ public class HomeController {
     public String negocios() {
         return "negocios";
     }
+
+    @GetMapping("/caixas")
+    public String caixas() { return "caixas"; }
 }
