@@ -160,9 +160,11 @@ class LoadDB {
                     80
             )));
 
-
             // ---Inicializa transportadora---
-            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora X", new ArrayList<>(List.of("Sul", "Sudeste")))));
+            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Jadlog", new ArrayList<>(List.of("Sul", "Sudeste")))));
+            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Transportadora Braspress", new ArrayList<>(List.of("Norte", "Sul")))));
+            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Total Express", new ArrayList<>(List.of("Nordeste", "Sul")))));
+            log.info("Preloading " + repositoryTransportadora.save(new Transportadora("Correios (SEDEX e PAC)", new ArrayList<>(List.of("Norte", "Nordeste", "Sul")))));
 
             //Inicializa negocio
             log.info("Preloading " + repositoryNegocio.save(new Negocio("venda", new HashSet<>(funcionarioRepository.findAll()), repositoryTransportadora.findAll().getFirst())));
