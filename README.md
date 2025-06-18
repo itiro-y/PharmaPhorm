@@ -37,10 +37,10 @@ PharmaPhorm/
 ├── src/
 │   ├── main/
 │   │   ├── java/
-│   │   ├── resources/
-│   │   │   ├── templates/    # Arquivos Thymeleaf
-│   │   │   ├── static/       # CSS, JS, imagens
-│   └── test/                # Testes unitários
+│   │   └── resources/
+│   │       ├── templates/    # Arquivos Thymeleaf
+│   │       └── static/       # CSS, JS, imagens
+│   └── test/                 # Testes unitários
 ├── docker/
 │   └── postgres/             # Arquivos de configuração do PostgreSQL
 ├── Dockerfile
@@ -50,9 +50,8 @@ PharmaPhorm/
 
 ---
 
-## 🐳 Como Rodar com Docker
+🐳 Como Rodar com Docker
 
-```bash
 # 1. Clone o repositório
 git clone git@github.com:matheuskya/PharmaPhorm.git
 
@@ -64,11 +63,10 @@ docker-compose up -d
 
 # 4. Rode o projeto
 ./mvnw spring-boot:run
-```
 
 ---
 
-## 🧪 Funcionalidades Principais
+🧪 Funcionalidades Principais
 
 - Cadastro de clientes
 - Controle de estoque de medicamentos
@@ -78,11 +76,11 @@ docker-compose up -d
 
 ---
 
-## 💡 Contribuindo
+💡 Contribuindo
 
 Sinta-se à vontade para abrir uma issue, enviar um pull request ou sugerir melhorias!
 
-## 📫 Participantes
+📫 Participantes
 
 Desenvolvido por Matheus Kenzo, João Vitor Ferrari, Guilherme Pinheiro Moura, Ayrton Itiro e Kevin Luiz
 
