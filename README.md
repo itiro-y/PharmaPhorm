@@ -48,7 +48,7 @@ PharmaPhorm/
 ├── docker-compose.yml
 ├── pom.xml
 └── README.md
-
+```
 ---
 
 ## 🐳 Como Rodar com Docker
